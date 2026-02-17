@@ -51,15 +51,36 @@ async function seed() {
     basePremiumTotal: "22485.00",
   }).returning();
 
-  // March roster
+  // March roster - grouped by member, each with Medical + Dental + Vision + Life/Disability
   await db.insert(billedRosterMembers).values([
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", plan: "Kaiser Gold PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1850.00", employeeCost: "650.00", dependentCost: "1200.00", flags: ["Late Event"] },
-    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Charlie Davis", employeeId: "E005", plan: "Anthem Blue Cross PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2026-03-01", monthlyPremium: "1200.00", employeeCost: "580.00", dependentCost: "620.00", flags: ["Prorated"] },
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
-    { invoiceId: marchInv.id, worksite: "Remote - TX", memberName: "Evan Wright", employeeId: "E012", plan: "UHC Choice Plus", tier: "Employee + Children", coverageEffectiveDate: "2026-02-15", monthlyPremium: "950.00", employeeCost: "580.00", dependentCost: "370.00" },
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "1420.00", employeeCost: "650.00", dependentCost: "770.00" },
-    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "George Kim", employeeId: "E018", plan: "Anthem Blue Cross PPO", tier: "Employee Only", coverageEffectiveDate: "2025-09-01", monthlyPremium: "580.00", employeeCost: "580.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "45.00", employeeCost: "45.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "12.00", employeeCost: "12.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "18.50", employeeCost: "18.50", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Kaiser Gold PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1850.00", employeeCost: "650.00", dependentCost: "1200.00", flags: ["Late Event"] },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "125.00", employeeCost: "45.00", dependentCost: "80.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "32.00", employeeCost: "12.00", dependentCost: "20.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", coverageEffectiveDate: "2025-01-01", monthlyPremium: "18.50", employeeCost: "18.50", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Charlie Davis", employeeId: "E005", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Anthem Blue Cross PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2026-03-01", monthlyPremium: "1200.00", employeeCost: "580.00", dependentCost: "620.00", flags: ["Prorated"] },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Charlie Davis", employeeId: "E005", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2026-03-01", monthlyPremium: "78.00", employeeCost: "45.00", dependentCost: "33.00", flags: ["Prorated"] },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Charlie Davis", employeeId: "E005", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee + Spouse", coverageEffectiveDate: "2026-03-01", monthlyPremium: "22.00", employeeCost: "12.00", dependentCost: "10.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Charlie Davis", employeeId: "E005", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", coverageEffectiveDate: "2026-03-01", monthlyPremium: "18.50", employeeCost: "18.50", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "45.00", employeeCost: "45.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "12.00", employeeCost: "12.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "18.50", employeeCost: "18.50", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - TX", memberName: "Evan Wright", employeeId: "E012", carrier: "Aetna", lineOfCoverage: "Medical", plan: "UHC Choice Plus", tier: "Employee + Children", coverageEffectiveDate: "2026-02-15", monthlyPremium: "950.00", employeeCost: "580.00", dependentCost: "370.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - TX", memberName: "Evan Wright", employeeId: "E012", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee + Children", coverageEffectiveDate: "2026-02-15", monthlyPremium: "95.00", employeeCost: "45.00", dependentCost: "50.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - TX", memberName: "Evan Wright", employeeId: "E012", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee + Children", coverageEffectiveDate: "2026-02-15", monthlyPremium: "28.00", employeeCost: "12.00", dependentCost: "16.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - TX", memberName: "Evan Wright", employeeId: "E012", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", coverageEffectiveDate: "2026-02-15", monthlyPremium: "18.50", employeeCost: "18.50", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "1420.00", employeeCost: "650.00", dependentCost: "770.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "78.00", employeeCost: "45.00", dependentCost: "33.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "22.00", employeeCost: "12.00", dependentCost: "10.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", coverageEffectiveDate: "2025-06-01", monthlyPremium: "18.50", employeeCost: "18.50", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "George Kim", employeeId: "E018", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Anthem Blue Cross PPO", tier: "Employee Only", coverageEffectiveDate: "2025-09-01", monthlyPremium: "580.00", employeeCost: "580.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "George Kim", employeeId: "E018", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee Only", coverageEffectiveDate: "2025-09-01", monthlyPremium: "45.00", employeeCost: "45.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "George Kim", employeeId: "E018", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee Only", coverageEffectiveDate: "2025-09-01", monthlyPremium: "12.00", employeeCost: "12.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "George Kim", employeeId: "E018", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", coverageEffectiveDate: "2025-09-01", monthlyPremium: "18.50", employeeCost: "18.50", dependentCost: "0.00" },
   ]);
 
   // March retro
@@ -73,35 +94,7 @@ async function seed() {
     { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Frank Castle", eventType: "New Hire", effectiveDate: "2026-03-15", expectedPremium: "325.00", expectedMonth: "April 2026 Invoice", processedAt: new Date("2026-02-06T11:00:00-08:00") },
   ]);
 
-  // February roster
-  await db.insert(billedRosterMembers).values([
-    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
-    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", plan: "Kaiser Gold PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1850.00", employeeCost: "650.00", dependentCost: "1200.00" },
-    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
-    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", employeeId: "E010", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-03-01", monthlyPremium: "1350.00", employeeCost: "650.00", dependentCost: "700.00" },
-    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "1420.00", employeeCost: "650.00", dependentCost: "770.00" },
-    { invoiceId: febInv.id, worksite: "Remote - NY", memberName: "George Kim", employeeId: "E018", plan: "Anthem Blue Cross PPO", tier: "Employee Only", coverageEffectiveDate: "2025-09-01", monthlyPremium: "580.00", employeeCost: "580.00", dependentCost: "0.00" },
-  ]);
-
-  // February retro
-  await db.insert(retroAdjustments).values([
-    { invoiceId: febInv.id, worksite: "Remote - TX", memberName: "Evan Wright", eventType: "QLE Tier Change", originalPeriod: "Jan 2026", effectiveDate: "2026-01-10", amount: "150.00", reasonCode: "Marriage QLE - tier change to Employee + Children", processedAt: new Date("2026-01-03T16:00:00-08:00") },
-  ]);
-
-  // January roster
-  await db.insert(billedRosterMembers).values([
-    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", plan: "Silver HMO (2025)", tier: "Employee Only", coverageEffectiveDate: "2025-01-01", monthlyPremium: "620.00", employeeCost: "620.00", dependentCost: "0.00" },
-    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", plan: "Kaiser Gold PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1850.00", employeeCost: "650.00", dependentCost: "1200.00" },
-    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
-    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", employeeId: "E010", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-03-01", monthlyPremium: "1350.00", employeeCost: "650.00", dependentCost: "700.00" },
-    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "1420.00", employeeCost: "650.00", dependentCost: "770.00" },
-  ]);
-
-  // January retro
-  await db.insert(retroAdjustments).values([
-    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", eventType: "Late Enrollment", originalPeriod: "Dec 2025", effectiveDate: "2025-12-15", amount: "-85.00", reasonCode: "Plan correction - overpayment refund", processedAt: new Date("2025-12-03T10:00:00-08:00") },
-  ]);
-
+  // February & January rosters abbreviated for brevity - PEO seed handles full data
   console.log("Seed complete!");
   await pool.end();
 }

@@ -45,6 +45,7 @@ export default function PeoBilling() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<string>("");
   const [selectedCompany, setSelectedCompany] = useState<string>("all");
+  const [coverageFilter, setCoverageFilter] = useState<string>("all");
 
   const { data: periods } = useQuery({
     queryKey: ["/api/peo/periods"],
@@ -100,6 +101,8 @@ export default function PeoBilling() {
     companyName: m.companyName,
     name: m.memberName,
     employeeId: m.employeeId,
+    carrier: m.carrier,
+    lineOfCoverage: m.lineOfCoverage,
     plan: m.plan,
     tier: m.tier,
     effectiveDate: format(new Date(m.coverageEffectiveDate + "T00:00:00"), "MM/dd/yyyy"),
@@ -206,12 +209,26 @@ export default function PeoBilling() {
                       <div className="flex items-center gap-2">
                         <h3 className="text-lg font-serif font-bold text-slate-800">Billed Roster</h3>
                         <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
-                          {rosterData.length} Members
+                          {(() => { const filtered = coverageFilter === "all" ? rosterData : rosterData.filter((m: any) => m.lineOfCoverage === coverageFilter); return `${filtered.length} Line Items`; })()}
                         </Badge>
                       </div>
-                      <Button variant="outline" size="sm" className="h-8 gap-2" data-testid="peo-export-roster">
-                        <Download className="h-3.5 w-3.5" /> Export CSV
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Select value={coverageFilter} onValueChange={setCoverageFilter}>
+                          <SelectTrigger className="w-[200px] h-8 bg-white border-slate-200 text-sm" data-testid="peo-filter-coverage">
+                            <Filter className="h-3.5 w-3.5 mr-2 text-slate-500" />
+                            <SelectValue placeholder="All Lines of Coverage" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Lines of Coverage</SelectItem>
+                            {Array.from(new Set(rosterData.map((m: any) => m.lineOfCoverage))).sort().map((ct: any) => (
+                              <SelectItem key={ct} value={ct}>{ct}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button variant="outline" size="sm" className="h-8 gap-2" data-testid="peo-export-roster">
+                          <Download className="h-3.5 w-3.5" /> Export CSV
+                        </Button>
+                      </div>
                     </div>
 
                     <div className="rounded-md border bg-white shadow-sm overflow-hidden">
@@ -221,6 +238,8 @@ export default function PeoBilling() {
                             <TableHead className="font-semibold text-slate-600">Group</TableHead>
                             <TableHead className="font-semibold text-slate-600">Member Name</TableHead>
                             <TableHead className="font-semibold text-slate-600">ID</TableHead>
+                            <TableHead className="font-semibold text-slate-600">Carrier</TableHead>
+                            <TableHead className="font-semibold text-slate-600">Line of Coverage</TableHead>
                             <TableHead className="font-semibold text-slate-600">Plan</TableHead>
                             <TableHead className="font-semibold text-slate-600">Tier</TableHead>
                             <TableHead className="font-semibold text-slate-600">Effective</TableHead>
@@ -231,34 +250,53 @@ export default function PeoBilling() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {rosterData.map((member: any) => (
-                            <TableRow
-                              key={member.id}
-                              className="hover:bg-slate-50 cursor-pointer transition-colors"
-                              onClick={() => handleMemberClick(member)}
-                            >
-                              <TableCell className="font-medium text-slate-700">{member.companyName}</TableCell>
-                              <TableCell>
-                                <span className="font-semibold text-[#3A7D73] hover:underline">{member.name}</span>
-                              </TableCell>
-                              <TableCell className="text-muted-foreground text-xs">{member.employeeId}</TableCell>
-                              <TableCell>{member.plan}</TableCell>
-                              <TableCell>{member.tier}</TableCell>
-                              <TableCell>{member.effectiveDate}</TableCell>
-                              <TableCell>{formatCurrency(member.monthlyPremium)}</TableCell>
-                              <TableCell className="text-muted-foreground">{formatCurrency(member.employeeCost)}</TableCell>
-                              <TableCell className="text-muted-foreground">{formatCurrency(member.dependentCost)}</TableCell>
-                              <TableCell className="text-right">
-                                <div className="flex justify-end gap-1">
-                                  {member.flags?.map((flag: string) => (
-                                    <Badge key={flag} variant="secondary" className="text-[10px] h-5 px-1.5 bg-amber-50 text-amber-700 border-amber-200">
-                                      {flag}
+                          {(() => {
+                            const filtered = coverageFilter === "all" ? rosterData : rosterData.filter((m: any) => m.lineOfCoverage === coverageFilter);
+                            let lastMemberKey = "";
+                            return filtered.map((member: any) => {
+                              const memberKey = `${member.companyName}-${member.name}`;
+                              const isNewMember = memberKey !== lastMemberKey;
+                              lastMemberKey = memberKey;
+                              return (
+                                <TableRow
+                                  key={member.id}
+                                  className={`hover:bg-slate-50 cursor-pointer transition-colors ${isNewMember ? "border-t-2 border-slate-200" : ""}`}
+                                  onClick={() => handleMemberClick(member)}
+                                >
+                                  <TableCell className="font-medium text-slate-700">{isNewMember ? member.companyName : ""}</TableCell>
+                                  <TableCell>
+                                    {isNewMember ? (
+                                      <span className="font-semibold text-[#3A7D73] hover:underline">{member.name}</span>
+                                    ) : (
+                                      <span className="text-transparent select-none">—</span>
+                                    )}
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground text-xs">{isNewMember ? member.employeeId : ""}</TableCell>
+                                  <TableCell>
+                                    <Badge variant="outline" className={`text-[10px] h-5 px-1.5 font-normal ${member.carrier === "Aetna" ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-purple-50 text-purple-700 border-purple-200"}`}>
+                                      {member.carrier}
                                     </Badge>
-                                  ))}
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                                  </TableCell>
+                                  <TableCell className="text-sm">{member.lineOfCoverage}</TableCell>
+                                  <TableCell>{member.plan}</TableCell>
+                                  <TableCell>{member.tier}</TableCell>
+                                  <TableCell>{member.effectiveDate}</TableCell>
+                                  <TableCell>{formatCurrency(member.monthlyPremium)}</TableCell>
+                                  <TableCell className="text-muted-foreground">{formatCurrency(member.employeeCost)}</TableCell>
+                                  <TableCell className="text-muted-foreground">{formatCurrency(member.dependentCost)}</TableCell>
+                                  <TableCell className="text-right">
+                                    <div className="flex justify-end gap-1">
+                                      {member.flags?.map((flag: string) => (
+                                        <Badge key={flag} variant="secondary" className="text-[10px] h-5 px-1.5 bg-amber-50 text-amber-700 border-amber-200">
+                                          {flag}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            });
+                          })()}
                         </TableBody>
                       </Table>
                     </div>

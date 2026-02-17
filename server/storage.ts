@@ -62,12 +62,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getRosterByInvoice(invoiceId: number): Promise<BilledRosterMember[]> {
-    return db.select().from(billedRosterMembers).where(eq(billedRosterMembers.invoiceId, invoiceId));
+    return db.select().from(billedRosterMembers).where(eq(billedRosterMembers.invoiceId, invoiceId)).orderBy(billedRosterMembers.memberName, billedRosterMembers.lineOfCoverage);
   }
 
   async getRosterByInvoiceIds(invoiceIds: number[]): Promise<BilledRosterMember[]> {
     if (invoiceIds.length === 0) return [];
-    return db.select().from(billedRosterMembers).where(inArray(billedRosterMembers.invoiceId, invoiceIds));
+    return db.select().from(billedRosterMembers).where(inArray(billedRosterMembers.invoiceId, invoiceIds)).orderBy(billedRosterMembers.invoiceId, billedRosterMembers.memberName, billedRosterMembers.lineOfCoverage);
   }
 
   async createRosterMember(data: InsertBilledRosterMember): Promise<BilledRosterMember> {

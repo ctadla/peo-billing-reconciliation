@@ -23,6 +23,8 @@ export const billedRosterMembers = pgTable("billed_roster_members", {
   worksite: text("worksite").notNull(),
   memberName: text("member_name").notNull(),
   employeeId: text("employee_id").notNull(),
+  carrier: text("carrier").notNull(),
+  lineOfCoverage: text("line_of_coverage").notNull(),
   plan: text("plan").notNull(),
   tier: text("tier").notNull(),
   coverageEffectiveDate: date("coverage_effective_date").notNull(),

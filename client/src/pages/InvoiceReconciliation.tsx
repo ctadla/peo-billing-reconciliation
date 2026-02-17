@@ -79,6 +79,8 @@ export default function InvoiceReconciliation() {
     worksite: m.worksite,
     name: m.memberName,
     employeeId: m.employeeId,
+    carrier: m.carrier,
+    lineOfCoverage: m.lineOfCoverage,
     plan: m.plan,
     tier: m.tier,
     effectiveDate: format(new Date(m.coverageEffectiveDate + "T00:00:00"), "MM/dd/yyyy"),
