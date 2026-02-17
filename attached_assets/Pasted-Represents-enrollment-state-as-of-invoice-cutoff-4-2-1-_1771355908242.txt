@@ -1,0 +1,157 @@
+Represents enrollment state as of invoice cutoff.
+
+4.2.1 Header Metadata
+
+Coverage Period (e.g., 3/1/26–3/31/26)
+
+Invoice Generation Timestamp (e.g., 2/5/26 09:12 PT)
+
+Cutoff Timestamp (e.g., includes changes processed through 2/4/26 23:59 PT)
+
+Invoice ID
+
+Remittance Batch ID
+
+Total Premium Remitted
+
+Retro Total (net)
+
+Base Premium Total
+
+This snapshot must be immutable (or versioned) once remittance is initiated.
+
+4.2.2 Billed Roster Table
+
+Displays members included in this month’s base premium.
+
+Columns:
+
+Worksite
+
+Member Name (clickable → enrollment page)
+
+Employee ID
+
+Plan
+
+Tier
+
+Coverage Effective Date
+
+Termination Date (if future-dated)
+
+Monthly Premium
+
+Employer Share
+
+Employee Share
+
+Flags (if applicable):
+
+Manual override
+
+Proration
+
+Late event
+
+Requirements:
+
+Sum of all rows = Base Premium Total.
+
+PEO-level view must equal sum of all worksites.
+
+4.2.3 Retro Adjustments Included
+
+Displays adjustments tied to prior coverage periods but processed before cutoff.
+
+Columns:
+
+Worksite
+
+Member Name (clickable)
+
+Event Type (Late Enrollment, Retro Term, QLE Tier Change, etc.)
+
+Original Coverage Period Impacted
+
+Effective Date
+
+Adjustment Amount (+/-)
+
+Reason Code
+
+Processed Timestamp
+
+Sum of this table = Retro Total.
+
+Retro adjustments must always tie back to a specific enrollment event ID.
+
+Section B: Post-Cutoff Changes (Not Billed Yet)
+
+Purpose:
+
+Show enrollment changes effective in future coverage periods.
+
+Show changes that missed the cutoff and will be included next month.
+
+Characteristics:
+
+Clearly labeled: “Not included in current invoice totals.”
+
+Non-financial for current coverage month.
+
+Columns:
+
+Worksite
+
+Member Name
+
+Event Type
+
+Effective Date
+
+Expected Monthly Premium
+
+Expected Impact Month
+
+Processed Timestamp
+
+This prevents confusion when Ops sees “missing” members.
+
+4.3 Member Drilldown
+
+Clicking a member opens:
+
+Full enrollment history
+
+All coverage changes
+
+Event timeline
+
+Associated invoice(s)
+
+Retro adjustments generated
+
+Payroll deduction status (future enhancement)
+
+4.4 Export Functionality
+
+Each table supports:
+
+CSV export (respecting filters)
+
+Full Invoice Snapshot export (combined view)
+
+Export metadata:
+
+Coverage Period
+
+Invoice ID
+
+Cutoff timestamp
+
+Filter state
+
+Optional:
+
+Download remittance file preview
