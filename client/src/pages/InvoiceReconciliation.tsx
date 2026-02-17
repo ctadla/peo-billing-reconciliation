@@ -6,7 +6,14 @@ import { RetroTable } from "@/components/reconciliation/RetroTable";
 import { PostCutoffTable } from "@/components/reconciliation/PostCutoffTable";
 import { MemberDetailSheet } from "@/components/reconciliation/MemberDetailSheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "lucide-react";
 
 // MOCK DATA
 const SUMMARY_DATA = {
@@ -126,6 +133,7 @@ const POST_CUTOFF_DATA = [
 export default function InvoiceReconciliation() {
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState("mar-2026");
 
   const handleMemberClick = (member: any) => {
     setSelectedMember(member);
@@ -142,8 +150,21 @@ export default function InvoiceReconciliation() {
             <h2 className="text-3xl font-serif font-bold text-slate-800 tracking-tight">Invoice Reconciliation</h2>
             <p className="text-muted-foreground mt-1">Audit premiums, retro adjustments, and roster changes for this billing cycle.</p>
           </div>
-          <div className="text-sm text-muted-foreground bg-white px-3 py-1 rounded border shadow-sm">
-            Last updated: Today at 9:41 AM
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-slate-600">Viewing Invoice:</span>
+            <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+              <SelectTrigger className="w-[280px] bg-white border-slate-200">
+                <Calendar className="w-4 h-4 mr-2 text-slate-500" />
+                <SelectValue placeholder="Select coverage period" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mar-2026">March 2026 (3/1–3/31)</SelectItem>
+                <SelectItem value="feb-2026">February 2026 (2/1–2/28)</SelectItem>
+                <SelectItem value="jan-2026">January 2026 (1/1–1/31)</SelectItem>
+                <SelectItem value="dec-2025">December 2025 (12/1–12/31)</SelectItem>
+                <SelectItem value="nov-2025">November 2025 (11/1–11/30)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

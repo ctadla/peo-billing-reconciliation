@@ -73,11 +73,11 @@ export function Header() {
         </div>
 
         <nav className="flex items-center gap-8 text-sm font-medium text-slate-600">
-          <a href="#" className="pb-2 hover:text-[#3A7D73]">Company</a>
+          <a href="#" className="pb-2 text-[#3A7D73] border-b-2 border-[#3A7D73]">Company</a>
           <a href="#" className="pb-2 hover:text-[#3A7D73]">Employees</a>
           <a href="#" className="pb-2 hover:text-[#3A7D73]">Employee Benefits</a>
           <a href="#" className="pb-2 hover:text-[#3A7D73]">Policies</a>
-          <a href="#" className="pb-2 text-[#3A7D73] border-b-2 border-[#3A7D73]">NPR & BoR</a>
+          <a href="#" className="pb-2 hover:text-[#3A7D73]">NPR & BoR</a>
           <a href="#" className="pb-2 hover:text-[#3A7D73]">Other</a>
         </nav>
       </div>
