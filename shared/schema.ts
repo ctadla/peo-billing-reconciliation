@@ -28,8 +28,8 @@ export const billedRosterMembers = pgTable("billed_roster_members", {
   coverageEffectiveDate: date("coverage_effective_date").notNull(),
   terminationDate: date("termination_date"),
   monthlyPremium: numeric("monthly_premium", { precision: 10, scale: 2 }).notNull(),
-  employerShare: numeric("employer_share", { precision: 10, scale: 2 }).notNull(),
-  employeeShare: numeric("employee_share", { precision: 10, scale: 2 }).notNull(),
+  employeeCost: numeric("employee_cost", { precision: 10, scale: 2 }).notNull(),
+  dependentCost: numeric("dependent_cost", { precision: 10, scale: 2 }).notNull(),
   flags: text("flags").array(),
 });
 

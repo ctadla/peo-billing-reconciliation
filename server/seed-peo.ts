@@ -50,10 +50,10 @@ async function seedPEO() {
 
   // Bright Horizons March roster
   await db.insert(billedRosterMembers).values([
-    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "Maria Garcia", employeeId: "BH001", plan: "Aetna Select PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1780.00", employerShare: "1300.00", employeeShare: "480.00" },
-    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "James Wilson", employeeId: "BH002", plan: "Aetna Select PPO", tier: "Employee Only", coverageEffectiveDate: "2025-06-01", monthlyPremium: "620.00", employerShare: "500.00", employeeShare: "120.00" },
-    { invoiceId: bhMar.id, worksite: "Remote - CO", memberName: "Lisa Park", employeeId: "BH005", plan: "Aetna Select PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2026-01-01", monthlyPremium: "1150.00", employerShare: "850.00", employeeShare: "300.00" },
-    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "Tom Harris", employeeId: "BH008", plan: "Aetna Basic HMO", tier: "Employee Only", coverageEffectiveDate: "2024-09-01", monthlyPremium: "530.00", employerShare: "400.00", employeeShare: "130.00" },
+    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "Maria Garcia", employeeId: "BH001", plan: "Aetna Select PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1780.00", employeeCost: "620.00", dependentCost: "1160.00" },
+    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "James Wilson", employeeId: "BH002", plan: "Aetna Select PPO", tier: "Employee Only", coverageEffectiveDate: "2025-06-01", monthlyPremium: "620.00", employeeCost: "620.00", dependentCost: "0.00" },
+    { invoiceId: bhMar.id, worksite: "Remote - CO", memberName: "Lisa Park", employeeId: "BH005", plan: "Aetna Select PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2026-01-01", monthlyPremium: "1150.00", employeeCost: "620.00", dependentCost: "530.00" },
+    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "Tom Harris", employeeId: "BH008", plan: "Aetna Basic HMO", tier: "Employee Only", coverageEffectiveDate: "2024-09-01", monthlyPremium: "530.00", employeeCost: "530.00", dependentCost: "0.00" },
   ]);
 
   await db.insert(retroAdjustments).values([
@@ -62,17 +62,17 @@ async function seedPEO() {
 
   // Bright Horizons Feb roster
   await db.insert(billedRosterMembers).values([
-    { invoiceId: bhFeb.id, worksite: "Denver HQ", memberName: "Maria Garcia", employeeId: "BH001", plan: "Aetna Select PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1450.00", employerShare: "1050.00", employeeShare: "400.00" },
-    { invoiceId: bhFeb.id, worksite: "Denver HQ", memberName: "James Wilson", employeeId: "BH002", plan: "Aetna Select PPO", tier: "Employee Only", coverageEffectiveDate: "2025-06-01", monthlyPremium: "620.00", employerShare: "500.00", employeeShare: "120.00" },
-    { invoiceId: bhFeb.id, worksite: "Remote - CO", memberName: "Lisa Park", employeeId: "BH005", plan: "Aetna Select PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2026-01-01", monthlyPremium: "1150.00", employerShare: "850.00", employeeShare: "300.00" },
-    { invoiceId: bhFeb.id, worksite: "Denver HQ", memberName: "Tom Harris", employeeId: "BH008", plan: "Aetna Basic HMO", tier: "Employee Only", coverageEffectiveDate: "2024-09-01", monthlyPremium: "530.00", employerShare: "400.00", employeeShare: "130.00" },
+    { invoiceId: bhFeb.id, worksite: "Denver HQ", memberName: "Maria Garcia", employeeId: "BH001", plan: "Aetna Select PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1450.00", employeeCost: "620.00", dependentCost: "830.00" },
+    { invoiceId: bhFeb.id, worksite: "Denver HQ", memberName: "James Wilson", employeeId: "BH002", plan: "Aetna Select PPO", tier: "Employee Only", coverageEffectiveDate: "2025-06-01", monthlyPremium: "620.00", employeeCost: "620.00", dependentCost: "0.00" },
+    { invoiceId: bhFeb.id, worksite: "Remote - CO", memberName: "Lisa Park", employeeId: "BH005", plan: "Aetna Select PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2026-01-01", monthlyPremium: "1150.00", employeeCost: "620.00", dependentCost: "530.00" },
+    { invoiceId: bhFeb.id, worksite: "Denver HQ", memberName: "Tom Harris", employeeId: "BH008", plan: "Aetna Basic HMO", tier: "Employee Only", coverageEffectiveDate: "2024-09-01", monthlyPremium: "530.00", employeeCost: "530.00", dependentCost: "0.00" },
   ]);
 
   // Bright Horizons Jan roster
   await db.insert(billedRosterMembers).values([
-    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "Maria Garcia", employeeId: "BH001", plan: "Aetna Select PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1450.00", employerShare: "1050.00", employeeShare: "400.00" },
-    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "James Wilson", employeeId: "BH002", plan: "Aetna Select PPO", tier: "Employee Only", coverageEffectiveDate: "2025-06-01", monthlyPremium: "620.00", employerShare: "500.00", employeeShare: "120.00" },
-    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "Tom Harris", employeeId: "BH008", plan: "Aetna Basic HMO", tier: "Employee Only", coverageEffectiveDate: "2024-09-01", monthlyPremium: "530.00", employerShare: "400.00", employeeShare: "130.00" },
+    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "Maria Garcia", employeeId: "BH001", plan: "Aetna Select PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1450.00", employeeCost: "620.00", dependentCost: "830.00" },
+    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "James Wilson", employeeId: "BH002", plan: "Aetna Select PPO", tier: "Employee Only", coverageEffectiveDate: "2025-06-01", monthlyPremium: "620.00", employeeCost: "620.00", dependentCost: "0.00" },
+    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "Tom Harris", employeeId: "BH008", plan: "Aetna Basic HMO", tier: "Employee Only", coverageEffectiveDate: "2024-09-01", monthlyPremium: "530.00", employeeCost: "530.00", dependentCost: "0.00" },
   ]);
 
   await db.insert(retroAdjustments).values([
@@ -121,9 +121,9 @@ async function seedPEO() {
 
   // Cascade March roster
   await db.insert(billedRosterMembers).values([
-    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Priya Patel", employeeId: "CD001", plan: "Premera Blue Cross", tier: "Employee Only", coverageEffectiveDate: "2025-03-01", monthlyPremium: "590.00", employerShare: "450.00", employeeShare: "140.00" },
-    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Derek Tanaka", employeeId: "CD003", plan: "Premera Blue Cross", tier: "Employee + Children", coverageEffectiveDate: "2025-01-01", monthlyPremium: "980.00", employerShare: "720.00", employeeShare: "260.00" },
-    { invoiceId: cdMar.id, worksite: "Remote - WA", memberName: "Nina Reeves", employeeId: "CD006", plan: "Premera Blue Cross", tier: "Family", coverageEffectiveDate: "2026-01-01", monthlyPremium: "1650.00", employerShare: "1200.00", employeeShare: "450.00", flags: ["Manual Override"] },
+    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Priya Patel", employeeId: "CD001", plan: "Premera Blue Cross", tier: "Employee Only", coverageEffectiveDate: "2025-03-01", monthlyPremium: "590.00", employeeCost: "590.00", dependentCost: "0.00" },
+    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Derek Tanaka", employeeId: "CD003", plan: "Premera Blue Cross", tier: "Employee + Children", coverageEffectiveDate: "2025-01-01", monthlyPremium: "980.00", employeeCost: "590.00", dependentCost: "390.00" },
+    { invoiceId: cdMar.id, worksite: "Remote - WA", memberName: "Nina Reeves", employeeId: "CD006", plan: "Premera Blue Cross", tier: "Family", coverageEffectiveDate: "2026-01-01", monthlyPremium: "1650.00", employeeCost: "590.00", dependentCost: "1060.00", flags: ["Manual Override"] },
   ]);
 
   await db.insert(retroAdjustments).values([
@@ -136,15 +136,15 @@ async function seedPEO() {
 
   // Cascade Feb roster
   await db.insert(billedRosterMembers).values([
-    { invoiceId: cdFeb.id, worksite: "Seattle Office", memberName: "Priya Patel", employeeId: "CD001", plan: "Premera Blue Cross", tier: "Employee Only", coverageEffectiveDate: "2025-03-01", monthlyPremium: "590.00", employerShare: "450.00", employeeShare: "140.00" },
-    { invoiceId: cdFeb.id, worksite: "Seattle Office", memberName: "Derek Tanaka", employeeId: "CD003", plan: "Premera Blue Cross", tier: "Employee + Children", coverageEffectiveDate: "2025-01-01", monthlyPremium: "980.00", employerShare: "720.00", employeeShare: "260.00" },
-    { invoiceId: cdFeb.id, worksite: "Remote - WA", memberName: "Nina Reeves", employeeId: "CD006", plan: "Premera Blue Cross", tier: "Family", coverageEffectiveDate: "2026-01-01", monthlyPremium: "1650.00", employerShare: "1200.00", employeeShare: "450.00" },
+    { invoiceId: cdFeb.id, worksite: "Seattle Office", memberName: "Priya Patel", employeeId: "CD001", plan: "Premera Blue Cross", tier: "Employee Only", coverageEffectiveDate: "2025-03-01", monthlyPremium: "590.00", employeeCost: "590.00", dependentCost: "0.00" },
+    { invoiceId: cdFeb.id, worksite: "Seattle Office", memberName: "Derek Tanaka", employeeId: "CD003", plan: "Premera Blue Cross", tier: "Employee + Children", coverageEffectiveDate: "2025-01-01", monthlyPremium: "980.00", employeeCost: "590.00", dependentCost: "390.00" },
+    { invoiceId: cdFeb.id, worksite: "Remote - WA", memberName: "Nina Reeves", employeeId: "CD006", plan: "Premera Blue Cross", tier: "Family", coverageEffectiveDate: "2026-01-01", monthlyPremium: "1650.00", employeeCost: "590.00", dependentCost: "1060.00" },
   ]);
 
   // Cascade Jan roster
   await db.insert(billedRosterMembers).values([
-    { invoiceId: cdJan.id, worksite: "Seattle Office", memberName: "Priya Patel", employeeId: "CD001", plan: "Premera Blue Cross", tier: "Employee Only", coverageEffectiveDate: "2025-03-01", monthlyPremium: "590.00", employerShare: "450.00", employeeShare: "140.00" },
-    { invoiceId: cdJan.id, worksite: "Seattle Office", memberName: "Derek Tanaka", employeeId: "CD003", plan: "Premera Blue Cross", tier: "Employee + Children", coverageEffectiveDate: "2025-01-01", monthlyPremium: "980.00", employerShare: "720.00", employeeShare: "260.00" },
+    { invoiceId: cdJan.id, worksite: "Seattle Office", memberName: "Priya Patel", employeeId: "CD001", plan: "Premera Blue Cross", tier: "Employee Only", coverageEffectiveDate: "2025-03-01", monthlyPremium: "590.00", employeeCost: "590.00", dependentCost: "0.00" },
+    { invoiceId: cdJan.id, worksite: "Seattle Office", memberName: "Derek Tanaka", employeeId: "CD003", plan: "Premera Blue Cross", tier: "Employee + Children", coverageEffectiveDate: "2025-01-01", monthlyPremium: "980.00", employeeCost: "590.00", dependentCost: "390.00" },
   ]);
 
   console.log("PEO seed complete!");

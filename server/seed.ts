@@ -53,13 +53,13 @@ async function seed() {
 
   // March roster
   await db.insert(billedRosterMembers).values([
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "650.00", employerShare: "500.00", employeeShare: "150.00" },
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", plan: "Kaiser Gold PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1850.00", employerShare: "1200.00", employeeShare: "650.00", flags: ["Late Event"] },
-    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Charlie Davis", employeeId: "E005", plan: "Anthem Blue Cross PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2026-03-01", monthlyPremium: "1200.00", employerShare: "800.00", employeeShare: "400.00", flags: ["Prorated"] },
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "650.00", employerShare: "500.00", employeeShare: "150.00" },
-    { invoiceId: marchInv.id, worksite: "Remote - TX", memberName: "Evan Wright", employeeId: "E012", plan: "UHC Choice Plus", tier: "Employee + Children", coverageEffectiveDate: "2026-02-15", monthlyPremium: "950.00", employerShare: "700.00", employeeShare: "250.00" },
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "1420.00", employerShare: "1000.00", employeeShare: "420.00" },
-    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "George Kim", employeeId: "E018", plan: "Anthem Blue Cross PPO", tier: "Employee Only", coverageEffectiveDate: "2025-09-01", monthlyPremium: "580.00", employerShare: "450.00", employeeShare: "130.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", plan: "Kaiser Gold PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1850.00", employeeCost: "650.00", dependentCost: "1200.00", flags: ["Late Event"] },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Charlie Davis", employeeId: "E005", plan: "Anthem Blue Cross PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2026-03-01", monthlyPremium: "1200.00", employeeCost: "580.00", dependentCost: "620.00", flags: ["Prorated"] },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - TX", memberName: "Evan Wright", employeeId: "E012", plan: "UHC Choice Plus", tier: "Employee + Children", coverageEffectiveDate: "2026-02-15", monthlyPremium: "950.00", employeeCost: "580.00", dependentCost: "370.00" },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "1420.00", employeeCost: "650.00", dependentCost: "770.00" },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "George Kim", employeeId: "E018", plan: "Anthem Blue Cross PPO", tier: "Employee Only", coverageEffectiveDate: "2025-09-01", monthlyPremium: "580.00", employeeCost: "580.00", dependentCost: "0.00" },
   ]);
 
   // March retro
@@ -75,12 +75,12 @@ async function seed() {
 
   // February roster
   await db.insert(billedRosterMembers).values([
-    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "650.00", employerShare: "500.00", employeeShare: "150.00" },
-    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", plan: "Kaiser Gold PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1850.00", employerShare: "1200.00", employeeShare: "650.00" },
-    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "650.00", employerShare: "500.00", employeeShare: "150.00" },
-    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", employeeId: "E010", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-03-01", monthlyPremium: "1350.00", employerShare: "950.00", employeeShare: "400.00" },
-    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "1420.00", employerShare: "1000.00", employeeShare: "420.00" },
-    { invoiceId: febInv.id, worksite: "Remote - NY", memberName: "George Kim", employeeId: "E018", plan: "Anthem Blue Cross PPO", tier: "Employee Only", coverageEffectiveDate: "2025-09-01", monthlyPremium: "580.00", employerShare: "450.00", employeeShare: "130.00" },
+    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
+    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", plan: "Kaiser Gold PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1850.00", employeeCost: "650.00", dependentCost: "1200.00" },
+    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
+    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", employeeId: "E010", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-03-01", monthlyPremium: "1350.00", employeeCost: "650.00", dependentCost: "700.00" },
+    { invoiceId: febInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "1420.00", employeeCost: "650.00", dependentCost: "770.00" },
+    { invoiceId: febInv.id, worksite: "Remote - NY", memberName: "George Kim", employeeId: "E018", plan: "Anthem Blue Cross PPO", tier: "Employee Only", coverageEffectiveDate: "2025-09-01", monthlyPremium: "580.00", employeeCost: "580.00", dependentCost: "0.00" },
   ]);
 
   // February retro
@@ -90,11 +90,11 @@ async function seed() {
 
   // January roster
   await db.insert(billedRosterMembers).values([
-    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", plan: "Silver HMO (2025)", tier: "Employee Only", coverageEffectiveDate: "2025-01-01", monthlyPremium: "620.00", employerShare: "480.00", employeeShare: "140.00" },
-    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", plan: "Kaiser Gold PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1850.00", employerShare: "1200.00", employeeShare: "650.00" },
-    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "650.00", employerShare: "500.00", employeeShare: "150.00" },
-    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", employeeId: "E010", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-03-01", monthlyPremium: "1350.00", employerShare: "950.00", employeeShare: "400.00" },
-    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "1420.00", employerShare: "1000.00", employeeShare: "420.00" },
+    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", plan: "Silver HMO (2025)", tier: "Employee Only", coverageEffectiveDate: "2025-01-01", monthlyPremium: "620.00", employeeCost: "620.00", dependentCost: "0.00" },
+    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", employeeId: "E002", plan: "Kaiser Gold PPO", tier: "Family", coverageEffectiveDate: "2025-01-01", monthlyPremium: "1850.00", employeeCost: "650.00", dependentCost: "1200.00" },
+    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Diana Prince", employeeId: "E008", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2024-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
+    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", employeeId: "E010", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-03-01", monthlyPremium: "1350.00", employeeCost: "650.00", dependentCost: "700.00" },
+    { invoiceId: janInv.id, worksite: "San Francisco HQ", memberName: "Fiona Chen", employeeId: "E015", plan: "Kaiser Gold PPO", tier: "Employee + Spouse", coverageEffectiveDate: "2025-06-01", monthlyPremium: "1420.00", employeeCost: "650.00", dependentCost: "770.00" },
   ]);
 
   // January retro

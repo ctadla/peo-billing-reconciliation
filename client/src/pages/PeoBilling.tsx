@@ -104,8 +104,8 @@ export default function PeoBilling() {
     tier: m.tier,
     effectiveDate: format(new Date(m.coverageEffectiveDate + "T00:00:00"), "MM/dd/yyyy"),
     monthlyPremium: parseFloat(m.monthlyPremium),
-    employerShare: parseFloat(m.employerShare),
-    employeeShare: parseFloat(m.employeeShare),
+    employeeCost: parseFloat(m.employeeCost),
+    dependentCost: parseFloat(m.dependentCost),
     flags: m.flags || undefined,
   })) || [];
 
@@ -225,8 +225,8 @@ export default function PeoBilling() {
                             <TableHead className="font-semibold text-slate-600">Tier</TableHead>
                             <TableHead className="font-semibold text-slate-600">Effective</TableHead>
                             <TableHead className="font-semibold text-slate-600">Premium</TableHead>
-                            <TableHead className="font-semibold text-slate-600">ER Share</TableHead>
-                            <TableHead className="font-semibold text-slate-600">EE Share</TableHead>
+                            <TableHead className="font-semibold text-slate-600">Employee Cost</TableHead>
+                            <TableHead className="font-semibold text-slate-600">Dependent Cost</TableHead>
                             <TableHead className="font-semibold text-slate-600 text-right">Flags</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -246,8 +246,8 @@ export default function PeoBilling() {
                               <TableCell>{member.tier}</TableCell>
                               <TableCell>{member.effectiveDate}</TableCell>
                               <TableCell>{formatCurrency(member.monthlyPremium)}</TableCell>
-                              <TableCell className="text-muted-foreground">{formatCurrency(member.employerShare)}</TableCell>
-                              <TableCell className="text-muted-foreground">{formatCurrency(member.employeeShare)}</TableCell>
+                              <TableCell className="text-muted-foreground">{formatCurrency(member.employeeCost)}</TableCell>
+                              <TableCell className="text-muted-foreground">{formatCurrency(member.dependentCost)}</TableCell>
                               <TableCell className="text-right">
                                 <div className="flex justify-end gap-1">
                                   {member.flags?.map((flag: string) => (

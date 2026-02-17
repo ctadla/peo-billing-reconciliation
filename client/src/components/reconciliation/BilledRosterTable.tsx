@@ -22,8 +22,8 @@ interface Member {
   effectiveDate: string;
   termDate?: string;
   monthlyPremium: number;
-  employerShare: number;
-  employeeShare: number;
+  employeeCost: number;
+  dependentCost: number;
   flags?: string[];
 }
 
@@ -66,8 +66,8 @@ export function BilledRosterTable({ data, onMemberClick }: BilledRosterProps) {
               <TableHead className="font-semibold text-slate-600">Tier</TableHead>
               <TableHead className="font-semibold text-slate-600">Effective</TableHead>
               <TableHead className="font-semibold text-slate-600">Premium</TableHead>
-              <TableHead className="font-semibold text-slate-600">ER Share</TableHead>
-              <TableHead className="font-semibold text-slate-600">EE Share</TableHead>
+              <TableHead className="font-semibold text-slate-600">Employee Cost</TableHead>
+              <TableHead className="font-semibold text-slate-600">Dependent Cost</TableHead>
               <TableHead className="font-semibold text-slate-600 text-right">Flags</TableHead>
             </TableRow>
           </TableHeader>
@@ -89,8 +89,8 @@ export function BilledRosterTable({ data, onMemberClick }: BilledRosterProps) {
                 <TableCell>{member.tier}</TableCell>
                 <TableCell>{member.effectiveDate}</TableCell>
                 <TableCell>{formatCurrency(member.monthlyPremium)}</TableCell>
-                <TableCell className="text-muted-foreground">{formatCurrency(member.employerShare)}</TableCell>
-                <TableCell className="text-muted-foreground">{formatCurrency(member.employeeShare)}</TableCell>
+                <TableCell className="text-muted-foreground">{formatCurrency(member.employeeCost)}</TableCell>
+                <TableCell className="text-muted-foreground">{formatCurrency(member.dependentCost)}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
                     {member.flags?.map(flag => (

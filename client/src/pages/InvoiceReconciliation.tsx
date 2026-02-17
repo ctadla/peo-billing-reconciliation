@@ -84,8 +84,8 @@ export default function InvoiceReconciliation() {
     effectiveDate: format(new Date(m.coverageEffectiveDate + "T00:00:00"), "MM/dd/yyyy"),
     termDate: m.terminationDate ? format(new Date(m.terminationDate + "T00:00:00"), "MM/dd/yyyy") : undefined,
     monthlyPremium: parseFloat(m.monthlyPremium),
-    employerShare: parseFloat(m.employerShare),
-    employeeShare: parseFloat(m.employeeShare),
+    employeeCost: parseFloat(m.employeeCost),
+    dependentCost: parseFloat(m.dependentCost),
     flags: m.flags || undefined,
   })) || [];
 
