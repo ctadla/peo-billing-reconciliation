@@ -31,9 +31,15 @@ export function SummaryCards({ data }: SummaryProps) {
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Coverage Period</p>
               <h3 className="text-xl font-bold text-slate-800">{data.coveragePeriod}</h3>
-              <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-                <FileCheck className="h-3 w-3" />
-                <span>ID: {data.invoiceId}</span>
+              <div className="flex flex-col gap-1 mt-2">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <FileCheck className="h-3 w-3" />
+                  <span>ID: {data.invoiceId}</span>
+                </div>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Clock className="h-3 w-3" />
+                  <span>Generated: {data.invoiceDate}</span>
+                </div>
               </div>
             </div>
             <div className="bg-[#3A7D73]/10 p-2 rounded-full text-[#3A7D73]">
