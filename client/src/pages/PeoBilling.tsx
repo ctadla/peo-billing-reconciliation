@@ -374,7 +374,7 @@ export default function PeoBilling() {
                             <TableHead className="font-semibold text-slate-600">Group</TableHead>
                             <TableHead className="font-semibold text-slate-600">Member Name</TableHead>
                             <TableHead className="font-semibold text-slate-600">Event Type</TableHead>
-                            <TableHead className="font-semibold text-slate-600">Original Period</TableHead>
+                            <TableHead className="font-semibold text-slate-600">Invoice Impacted</TableHead>
                             <TableHead className="font-semibold text-slate-600">Effective</TableHead>
                             <TableHead className="font-semibold text-slate-600">Reason</TableHead>
                             <TableHead className="font-semibold text-slate-600 text-right">Adjustment</TableHead>
