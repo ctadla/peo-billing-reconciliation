@@ -88,7 +88,6 @@ export function BilledRosterTable({ data, onMemberClick }: BilledRosterProps) {
             <TableRow>
               <TableHead className="font-semibold text-slate-600">Worksite</TableHead>
               <TableHead className="font-semibold text-slate-600">Member Name</TableHead>
-              <TableHead className="font-semibold text-slate-600">ID</TableHead>
               <TableHead className="font-semibold text-slate-600">Carrier</TableHead>
               <TableHead className="font-semibold text-slate-600">Line of Coverage</TableHead>
               <TableHead className="font-semibold text-slate-600">Plan</TableHead>
@@ -119,7 +118,6 @@ export function BilledRosterTable({ data, onMemberClick }: BilledRosterProps) {
                       <span className="text-transparent select-none">—</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-xs">{isNewMember ? member.employeeId : ""}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`text-[10px] h-5 px-1.5 font-normal ${member.carrier === "Aetna" ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-purple-50 text-purple-700 border-purple-200"}`}>
                       {member.carrier}
