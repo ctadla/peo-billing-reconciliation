@@ -376,7 +376,6 @@ export default function PeoBilling() {
                             <TableHead className="font-semibold text-slate-600">Event Type</TableHead>
                             <TableHead className="font-semibold text-slate-600">Invoice Impacted</TableHead>
                             <TableHead className="font-semibold text-slate-600">Effective</TableHead>
-                            <TableHead className="font-semibold text-slate-600">Reason</TableHead>
                             <TableHead className="font-semibold text-slate-600 text-right">Adjustment</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -394,7 +393,6 @@ export default function PeoBilling() {
                               </TableCell>
                               <TableCell className="text-muted-foreground">{item.originalPeriod}</TableCell>
                               <TableCell>{item.effectiveDate}</TableCell>
-                              <TableCell className="text-xs text-muted-foreground">{item.reason}</TableCell>
                               <TableCell className={`text-right font-medium ${item.amount < 0 ? "text-rose-600" : "text-emerald-600"}`}>
                                 {item.amount > 0 ? "+" : ""}{formatCurrency(item.amount)}
                               </TableCell>
@@ -402,7 +400,7 @@ export default function PeoBilling() {
                           ))}
                           {retroData.length === 0 && (
                             <TableRow>
-                              <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                              <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                                 No retro adjustments for this period.
                               </TableCell>
                             </TableRow>

@@ -59,11 +59,11 @@ async function seedPEO() {
   ]);
 
   await db.insert(retroAdjustments).values([
-    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "Maria Garcia", eventType: "QLE Tier Change", originalPeriod: "Feb 2026", effectiveDate: "2026-02-10", amount: "240.00", reasonCode: "New dependent added via birth QLE", processedAt: new Date("2026-02-03T11:00:00-08:00") },
+    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "Maria Garcia", eventType: "Qualifying Life Event", originalPeriod: "Feb 2026", effectiveDate: "2026-02-10", amount: "240.00", reasonCode: "New dependent added via birth QLE", processedAt: new Date("2026-02-03T11:00:00-08:00") },
   ]);
 
   await db.insert(retroAdjustments).values([
-    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "Tom Harris", eventType: "Late Enrollment", originalPeriod: "Dec 2025", effectiveDate: "2025-12-01", amount: "-120.00", reasonCode: "Late plan correction refund", processedAt: new Date("2025-12-02T15:00:00-08:00") },
+    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "Tom Harris", eventType: "Plan Change", originalPeriod: "Dec 2025", effectiveDate: "2025-12-01", amount: "-120.00", reasonCode: "Late plan correction refund", processedAt: new Date("2025-12-02T15:00:00-08:00") },
   ]);
 
   // Cascade Digital Solutions
@@ -96,11 +96,11 @@ async function seedPEO() {
   ]);
 
   await db.insert(retroAdjustments).values([
-    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Derek Tanaka", eventType: "Retro Termination", originalPeriod: "Feb 2026", effectiveDate: "2026-02-20", amount: "-175.00", reasonCode: "Dependent aged out - tier change", processedAt: new Date("2026-02-03T09:30:00-08:00") },
+    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Derek Tanaka", eventType: "Termination", originalPeriod: "Feb 2026", effectiveDate: "2026-02-20", amount: "-175.00", reasonCode: "Dependent aged out - tier change", processedAt: new Date("2026-02-03T09:30:00-08:00") },
   ]);
 
   await db.insert(postCutoffChanges).values([
-    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Ryan Cho", eventType: "New Hire", effectiveDate: "2026-03-10", expectedPremium: "590.00", expectedMonth: "April 2026 Invoice", processedAt: new Date("2026-02-07T14:00:00-08:00") },
+    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Ryan Cho", eventType: "New Hire Enrollment", effectiveDate: "2026-03-10", expectedPremium: "590.00", expectedMonth: "April 2026 Invoice", processedAt: new Date("2026-02-07T14:00:00-08:00") },
   ]);
 
   console.log("PEO seed complete!");

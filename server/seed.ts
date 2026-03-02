@@ -85,13 +85,13 @@ async function seed() {
 
   // March retro
   await db.insert(retroAdjustments).values([
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", eventType: "Late Enrollment", originalPeriod: "Feb 2026", effectiveDate: "2026-02-01", amount: "185.00", reasonCode: "Added dependent retroactively", processedAt: new Date("2026-02-02T14:30:00-08:00") },
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", eventType: "Retro Termination", originalPeriod: "Jan 2026", effectiveDate: "2026-01-15", amount: "-505.50", reasonCode: "Terminated mid-month", processedAt: new Date("2026-02-01T09:15:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", eventType: "Qualifying Life Event", originalPeriod: "Feb 2026", effectiveDate: "2026-02-01", amount: "185.00", reasonCode: "Added dependent retroactively", processedAt: new Date("2026-02-02T14:30:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", eventType: "Termination", originalPeriod: "Jan 2026", effectiveDate: "2026-01-15", amount: "-505.50", reasonCode: "Terminated mid-month", processedAt: new Date("2026-02-01T09:15:00-08:00") },
   ]);
 
   // March post-cutoff
   await db.insert(postCutoffChanges).values([
-    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Frank Castle", eventType: "New Hire", effectiveDate: "2026-03-15", expectedPremium: "325.00", expectedMonth: "April 2026 Invoice", processedAt: new Date("2026-02-06T11:00:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Frank Castle", eventType: "New Hire Enrollment", effectiveDate: "2026-03-15", expectedPremium: "325.00", expectedMonth: "April 2026 Invoice", processedAt: new Date("2026-02-06T11:00:00-08:00") },
   ]);
 
   // February & January rosters abbreviated for brevity - PEO seed handles full data
