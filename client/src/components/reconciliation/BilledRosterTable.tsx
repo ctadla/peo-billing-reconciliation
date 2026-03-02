@@ -86,7 +86,7 @@ export function BilledRosterTable({ data, onMemberClick }: BilledRosterProps) {
         <Table>
           <TableHeader className="bg-slate-50">
             <TableRow>
-              <TableHead className="font-semibold text-slate-600">Worksite</TableHead>
+              <TableHead className="font-semibold text-slate-600">Group</TableHead>
               <TableHead className="font-semibold text-slate-600">Member Name</TableHead>
               <TableHead className="font-semibold text-slate-600">Carrier</TableHead>
               <TableHead className="font-semibold text-slate-600">Line of Coverage</TableHead>
