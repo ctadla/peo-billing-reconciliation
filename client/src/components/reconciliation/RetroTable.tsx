@@ -61,7 +61,7 @@ export function RetroTable({ data, showWorksite = true }: RetroTableProps) {
   const grouped: RetroGroup[] = [];
   const groupMap = new Map<string, RetroGroup>();
   for (const item of data) {
-    const key = `${item.name}-${item.eventType}-${item.effectiveDate}`;
+    const key = `${item.name}-${item.eventType}-${item.originalPeriod}`;
     let group = groupMap.get(key);
     if (!group) {
       group = {
