@@ -145,11 +145,12 @@ export function RetroTable({ data, showWorksite = true }: RetroTableProps) {
                           {line.carrier}
                         </Badge>
                         <span className="ml-2 text-sm text-slate-600">{line.lineOfCoverage}</span>
+                        <span className="ml-2 text-xs text-slate-400">{line.plan} · {line.tier}</span>
                       </TableCell>
                       {showWorksite && <TableCell></TableCell>}
-                      <TableCell className="text-sm text-muted-foreground">{line.plan}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{line.tier}</TableCell>
                       <TableCell></TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{line.originalPeriod}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{line.effectiveDate}</TableCell>
                       <TableCell className={`text-right font-medium ${line.amount < 0 ? "text-rose-500" : "text-emerald-500"}`}>
                         {line.amount > 0 ? "+" : ""}{formatCurrency(line.amount)}
                       </TableCell>

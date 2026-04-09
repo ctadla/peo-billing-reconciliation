@@ -154,10 +154,11 @@ export function PostCutoffTable({ data, showWorksite = true }: PostCutoffTablePr
                           {line.carrier}
                         </Badge>
                         <span className="ml-2 text-sm text-slate-600">{line.lineOfCoverage}</span>
+                        <span className="ml-2 text-xs text-slate-400">{line.plan} · {line.tier}</span>
                       </TableCell>
                       {showWorksite && <TableCell></TableCell>}
-                      <TableCell className="text-sm text-muted-foreground">{line.plan}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{line.tier}</TableCell>
+                      <TableCell></TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{line.effectiveDate}</TableCell>
                       <TableCell></TableCell>
                       <TableCell className="text-right font-medium text-slate-500">
                         {formatCurrency(line.expectedPremium)}
