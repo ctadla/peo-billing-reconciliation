@@ -21,7 +21,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Loader2, Download, Filter, AlertTriangle, Building2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Calendar, Loader2, Download, Filter, AlertTriangle, Building2, ArrowLeft, Search, DollarSign, FileText, AlertCircle, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 
 function formatPeriodLabel(start: string, end: string) {
@@ -44,7 +46,8 @@ export default function PeoBilling() {
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<string>("");
-  const [selectedCompany, setSelectedCompany] = useState<string>("all");
+  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
+  const [companySearch, setCompanySearch] = useState("");
   const [coverageFilter, setCoverageFilter] = useState<string>("all");
 
   const { data: periods } = useQuery({
@@ -65,17 +68,24 @@ export default function PeoBilling() {
 
   const activePeriod = selectedPeriod || (periods && periods.length > 0 ? periods[periods.length - 1].start : "");
 
-  const { data: billingData, isLoading } = useQuery({
-    queryKey: ["/api/peo/billing", activePeriod, selectedCompany],
+  const { data: aggregatedData, isLoading: aggLoading } = useQuery({
+    queryKey: ["/api/peo/billing", activePeriod, "all"],
     queryFn: async () => {
       const params = new URLSearchParams({ period: activePeriod });
-      if (selectedCompany && selectedCompany !== "all") {
-        params.set("company", selectedCompany);
-      }
       const res = await fetch(`/api/peo/billing?${params}`);
       return res.json();
     },
-    enabled: !!activePeriod,
+    enabled: !!activePeriod && !selectedCompany,
+  });
+
+  const { data: companyData, isLoading: companyLoading } = useQuery({
+    queryKey: ["/api/peo/billing", activePeriod, selectedCompany],
+    queryFn: async () => {
+      const params = new URLSearchParams({ period: activePeriod, company: selectedCompany! });
+      const res = await fetch(`/api/peo/billing?${params}`);
+      return res.json();
+    },
+    enabled: !!activePeriod && !!selectedCompany,
   });
 
   const handleMemberClick = (member: any) => {
@@ -83,13 +93,284 @@ export default function PeoBilling() {
     setIsSheetOpen(true);
   };
 
+  const handleSelectCompany = (company: string) => {
+    setSelectedCompany(company);
+    setCoverageFilter("all");
+  };
+
+  const handleBackToLanding = () => {
+    setSelectedCompany(null);
+    setCoverageFilter("all");
+  };
+
+  const filteredCompanies = companies?.filter((c: string) =>
+    c.toLowerCase().includes(companySearch.toLowerCase())
+  ) || [];
+
+  const companyTotals = aggregatedData?.invoices?.reduce((acc: any, inv: any) => {
+    const name = inv.companyName;
+    if (!acc[name]) {
+      acc[name] = { totalRemitted: 0, basePremium: 0, retroTotal: 0, invoiceCount: 0 };
+    }
+    acc[name].totalRemitted += parseFloat(inv.totalRemitted);
+    acc[name].basePremium += parseFloat(inv.basePremiumTotal);
+    acc[name].retroTotal += parseFloat(inv.retroTotal);
+    acc[name].invoiceCount += 1;
+    return acc;
+  }, {} as Record<string, any>) || {};
+
+  if (selectedCompany) {
+    return (
+      <CompanyInvoiceView
+        companyName={selectedCompany}
+        activePeriod={activePeriod}
+        periods={periods}
+        selectedPeriod={selectedPeriod}
+        onPeriodChange={setSelectedPeriod}
+        billingData={companyData}
+        isLoading={companyLoading}
+        onBack={handleBackToLanding}
+        onMemberClick={handleMemberClick}
+        coverageFilter={coverageFilter}
+        onCoverageFilterChange={setCoverageFilter}
+        selectedMember={selectedMember}
+        isSheetOpen={isSheetOpen}
+        onSheetOpenChange={setIsSheetOpen}
+      />
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50/50 pb-20">
+      <Header activePage="peo-billing" />
+
+      <main className="container mx-auto px-6 py-8 max-w-7xl">
+        <div className="flex items-end justify-between mb-6">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Building2 className="h-5 w-5 text-[#3A7D73]" />
+              <span className="text-sm font-medium text-[#3A7D73] uppercase tracking-wider">PEO-Level View</span>
+            </div>
+            <h2 className="text-3xl font-serif font-bold text-slate-800 tracking-tight">PEO Billing</h2>
+            <p className="text-muted-foreground mt-1">Aggregated premium data across all groups. Select a company to view details.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-slate-600">Period:</span>
+            <Select value={activePeriod} onValueChange={setSelectedPeriod}>
+              <SelectTrigger className="w-[260px] bg-white border-slate-200" data-testid="select-peo-period">
+                <Calendar className="w-4 h-4 mr-2 text-slate-500" />
+                <SelectValue placeholder="Select coverage period" />
+              </SelectTrigger>
+              <SelectContent>
+                {periods?.slice().reverse().map((p: any) => (
+                  <SelectItem key={p.start} value={p.start} data-testid={`peo-period-${p.start}`}>
+                    {formatPeriodLabel(p.start, p.end)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {aggLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-[#3A7D73]" />
+          </div>
+        ) : aggregatedData?.summary ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+              <Card className="border-l-4 border-l-[#3A7D73] shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="pt-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Coverage Period</p>
+                      <h3 className="text-xl font-bold text-slate-800">
+                        {format(new Date(aggregatedData.summary.periodStart + "T00:00:00"), "M/d/yy")} – {format(new Date(aggregatedData.summary.periodEnd + "T00:00:00"), "M/d/yy")}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-2">{aggregatedData.summary.companyCount} groups · {aggregatedData.summary.invoiceCount} invoices</p>
+                    </div>
+                    <div className="bg-[#3A7D73]/10 p-2 rounded-full text-[#3A7D73]">
+                      <Calendar className="h-5 w-5" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="pt-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Total Premium Remitted</p>
+                      <h3 className="text-2xl font-bold text-slate-800">{formatCurrency(aggregatedData.summary.totalRemitted)}</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Sum across all companies</p>
+                    </div>
+                    <div className="bg-emerald-100 p-2 rounded-full text-emerald-700">
+                      <DollarSign className="h-5 w-5" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="pt-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Base Premium Total</p>
+                      <h3 className="text-xl font-bold text-slate-800">{formatCurrency(aggregatedData.summary.basePremium)}</h3>
+                      <p className="text-xs text-muted-foreground mt-1">Sum across all companies</p>
+                    </div>
+                    <div className="bg-slate-100 p-2 rounded-full text-slate-600">
+                      <FileText className="h-5 w-5" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="pt-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Retro Total (Net)</p>
+                      <h3 className={`text-xl font-bold ${aggregatedData.summary.retroTotal < 0 ? 'text-rose-600' : 'text-slate-800'}`}>
+                        {formatCurrency(aggregatedData.summary.retroTotal)}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-1">Sum across all companies</p>
+                    </div>
+                    <div className="bg-amber-100 p-2 rounded-full text-amber-700">
+                      <AlertCircle className="h-5 w-5" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-serif font-bold text-slate-800">Companies</h3>
+                <div className="relative w-[300px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="Search companies..."
+                    value={companySearch}
+                    onChange={(e) => setCompanySearch(e.target.value)}
+                    className="pl-9 bg-white border-slate-200"
+                    data-testid="input-company-search"
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-md border bg-white shadow-sm overflow-hidden">
+                <Table>
+                  <TableHeader className="bg-slate-50">
+                    <TableRow>
+                      <TableHead className="font-semibold text-slate-600">Company Name</TableHead>
+                      <TableHead className="font-semibold text-slate-600 text-right">Total Remitted</TableHead>
+                      <TableHead className="font-semibold text-slate-600 text-right">Base Premium</TableHead>
+                      <TableHead className="font-semibold text-slate-600 text-right">Retro Total</TableHead>
+                      <TableHead className="w-10"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredCompanies.map((company: string) => {
+                      const totals = companyTotals[company];
+                      return (
+                        <TableRow
+                          key={company}
+                          className="hover:bg-slate-50 cursor-pointer transition-colors"
+                          onClick={() => handleSelectCompany(company)}
+                          data-testid={`company-row-${company}`}
+                        >
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <div className="h-8 w-8 rounded-full bg-[#3A7D73]/10 flex items-center justify-center">
+                                <Building2 className="h-4 w-4 text-[#3A7D73]" />
+                              </div>
+                              <span className="font-semibold text-[#3A7D73] hover:underline">{company}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right font-medium">
+                            {totals ? formatCurrency(totals.totalRemitted) : "—"}
+                          </TableCell>
+                          <TableCell className="text-right text-muted-foreground">
+                            {totals ? formatCurrency(totals.basePremium) : "—"}
+                          </TableCell>
+                          <TableCell className={`text-right font-medium ${totals?.retroTotal < 0 ? 'text-rose-600' : ''}`}>
+                            {totals ? formatCurrency(totals.retroTotal) : "—"}
+                          </TableCell>
+                          <TableCell>
+                            <ChevronRight className="h-4 w-4 text-slate-400" />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    {filteredCompanies.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                          No companies found.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-20 text-muted-foreground">
+            No billing data available. Select a coverage period above.
+          </div>
+        )}
+      </main>
+
+      <MemberDetailSheet
+        member={selectedMember}
+        open={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
+      />
+    </div>
+  );
+}
+
+interface CompanyInvoiceViewProps {
+  companyName: string;
+  activePeriod: string;
+  periods: any;
+  selectedPeriod: string;
+  onPeriodChange: (period: string) => void;
+  billingData: any;
+  isLoading: boolean;
+  onBack: () => void;
+  onMemberClick: (member: any) => void;
+  coverageFilter: string;
+  onCoverageFilterChange: (filter: string) => void;
+  selectedMember: any;
+  isSheetOpen: boolean;
+  onSheetOpenChange: (open: boolean) => void;
+}
+
+function CompanyInvoiceView({
+  companyName,
+  activePeriod,
+  periods,
+  selectedPeriod,
+  onPeriodChange,
+  billingData,
+  isLoading,
+  onBack,
+  onMemberClick,
+  coverageFilter,
+  onCoverageFilterChange,
+  selectedMember,
+  isSheetOpen,
+  onSheetOpenChange,
+}: CompanyInvoiceViewProps) {
   const summaryData = billingData?.summary
     ? {
         coveragePeriod: `${format(new Date(billingData.summary.periodStart + "T00:00:00"), "M/d/yy")} – ${format(new Date(billingData.summary.periodEnd + "T00:00:00"), "M/d/yy")}`,
-        invoiceDate: `${billingData.summary.invoiceCount} invoices across ${billingData.summary.companyCount} groups`,
-        cutoffDate: billingData.invoices?.[0]?.cutoffTimestamp ? formatTimestamp(billingData.invoices[0].cutoffTimestamp) : "N/A",
-        invoiceId: `${billingData.summary.invoiceCount} invoices`,
-        batchId: selectedCompany !== "all" ? billingData.invoices?.[0]?.batchId || "—" : "Multiple",
+        invoiceDate: billingData.invoices?.length === 1 && billingData.invoices[0]?.invoiceGeneratedAt ? formatTimestamp(billingData.invoices[0].invoiceGeneratedAt) : `${billingData.summary.invoiceCount} invoices`,
+        cutoffDate: billingData.invoices?.length === 1 && billingData.invoices[0]?.cutoffTimestamp ? formatTimestamp(billingData.invoices[0].cutoffTimestamp) : "N/A",
+        invoiceId: billingData.invoices?.length === 1 ? billingData.invoices[0]?.invoiceId || "—" : `${billingData.summary.invoiceCount} invoices`,
+        batchId: billingData.invoices?.length === 1 ? billingData.invoices[0]?.batchId || "—" : "Multiple",
         totalRemitted: billingData.summary.totalRemitted,
         retroTotal: billingData.summary.retroTotal,
         basePremium: billingData.summary.basePremium,
@@ -109,7 +390,6 @@ export default function PeoBilling() {
     monthlyPremium: parseFloat(m.monthlyPremium),
     employeeCost: parseFloat(m.employeeCost),
     dependentCost: parseFloat(m.dependentCost),
-    flags: m.flags || undefined,
   })) || [];
 
   const retroData = billingData?.retro?.map((r: any) => ({
@@ -140,40 +420,36 @@ export default function PeoBilling() {
       <Header activePage="peo-billing" />
 
       <main className="container mx-auto px-6 py-8 max-w-7xl">
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Building2 className="h-5 w-5 text-[#3A7D73]" />
-              <span className="text-sm font-medium text-[#3A7D73] uppercase tracking-wider">PEO-Level View</span>
-            </div>
-            <h2 className="text-3xl font-serif font-bold text-slate-800 tracking-tight">PEO Billing Reconciliation</h2>
-            <p className="text-muted-foreground mt-1">Aggregated premium data across all groups in the PEO.</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-slate-600">Group:</span>
-              <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-                <SelectTrigger className="w-[240px] bg-white border-slate-200" data-testid="select-company">
-                  <SelectValue placeholder="All Groups" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Groups</SelectItem>
-                  {companies?.map((c: string) => (
-                    <SelectItem key={c} value={c} data-testid={`company-option-${c}`}>{c}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-[#3A7D73] hover:text-[#2d6359] hover:bg-[#3A7D73]/10 gap-1 mb-3 -ml-2"
+            onClick={onBack}
+            data-testid="button-back-to-landing"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to all companies
+          </Button>
+
+          <div className="flex items-end justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Building2 className="h-5 w-5 text-[#3A7D73]" />
+                <span className="text-sm font-medium text-[#3A7D73] uppercase tracking-wider">Company View</span>
+              </div>
+              <h2 className="text-3xl font-serif font-bold text-slate-800 tracking-tight">{companyName}</h2>
+              <p className="text-muted-foreground mt-1">Invoice details and billing data for this company.</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-slate-600">Period:</span>
-              <Select value={activePeriod} onValueChange={setSelectedPeriod}>
-                <SelectTrigger className="w-[260px] bg-white border-slate-200" data-testid="select-peo-period">
+              <span className="text-sm font-medium text-slate-600">Invoice Month:</span>
+              <Select value={activePeriod} onValueChange={onPeriodChange}>
+                <SelectTrigger className="w-[260px] bg-white border-slate-200" data-testid="select-company-period">
                   <Calendar className="w-4 h-4 mr-2 text-slate-500" />
                   <SelectValue placeholder="Select coverage period" />
                 </SelectTrigger>
                 <SelectContent>
                   {periods?.slice().reverse().map((p: any) => (
-                    <SelectItem key={p.start} value={p.start} data-testid={`peo-period-${p.start}`}>
+                    <SelectItem key={p.start} value={p.start} data-testid={`company-period-${p.start}`}>
                       {formatPeriodLabel(p.start, p.end)}
                     </SelectItem>
                   ))}
@@ -203,7 +479,6 @@ export default function PeoBilling() {
                 </TabsList>
 
                 <TabsContent value="roster" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  {/* PEO Billed Roster */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -213,7 +488,7 @@ export default function PeoBilling() {
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Select value={coverageFilter} onValueChange={setCoverageFilter}>
+                        <Select value={coverageFilter} onValueChange={onCoverageFilterChange}>
                           <SelectTrigger className="w-[200px] h-8 bg-white border-slate-200 text-sm" data-testid="peo-filter-coverage">
                             <Filter className="h-3.5 w-3.5 mr-2 text-slate-500" />
                             <SelectValue placeholder="All Lines of Coverage" />
@@ -235,7 +510,6 @@ export default function PeoBilling() {
                       <Table>
                         <TableHeader className="bg-slate-50">
                           <TableRow>
-                            <TableHead className="font-semibold text-slate-600">Group</TableHead>
                             <TableHead className="font-semibold text-slate-600">Member Name</TableHead>
                             <TableHead className="font-semibold text-slate-600">Carrier</TableHead>
                             <TableHead className="font-semibold text-slate-600">Line of Coverage</TableHead>
@@ -245,7 +519,6 @@ export default function PeoBilling() {
                             <TableHead className="font-semibold text-slate-600">Premium</TableHead>
                             <TableHead className="font-semibold text-slate-600">Employee Cost</TableHead>
                             <TableHead className="font-semibold text-slate-600">Dependent Cost</TableHead>
-                            <TableHead className="font-semibold text-slate-600 text-right">Flags</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -253,16 +526,15 @@ export default function PeoBilling() {
                             const filtered = coverageFilter === "all" ? rosterData : rosterData.filter((m: any) => m.lineOfCoverage === coverageFilter);
                             let lastMemberKey = "";
                             return filtered.map((member: any) => {
-                              const memberKey = `${member.companyName}-${member.name}`;
+                              const memberKey = member.employeeId || member.name;
                               const isNewMember = memberKey !== lastMemberKey;
                               lastMemberKey = memberKey;
                               return (
                                 <TableRow
                                   key={member.id}
                                   className={`hover:bg-slate-50 cursor-pointer transition-colors ${isNewMember ? "border-t-2 border-slate-200" : ""}`}
-                                  onClick={() => handleMemberClick(member)}
+                                  onClick={() => onMemberClick(member)}
                                 >
-                                  <TableCell className="font-medium text-slate-700">{isNewMember ? member.companyName : ""}</TableCell>
                                   <TableCell>
                                     {isNewMember ? (
                                       <span className="font-semibold text-[#3A7D73] hover:underline">{member.name}</span>
@@ -282,15 +554,6 @@ export default function PeoBilling() {
                                   <TableCell>{formatCurrency(member.monthlyPremium)}</TableCell>
                                   <TableCell className="text-muted-foreground">{formatCurrency(member.employeeCost)}</TableCell>
                                   <TableCell className="text-muted-foreground">{formatCurrency(member.dependentCost)}</TableCell>
-                                  <TableCell className="text-right">
-                                    <div className="flex justify-end gap-1">
-                                      {member.flags?.map((flag: string) => (
-                                        <Badge key={flag} variant="secondary" className="text-[10px] h-5 px-1.5 bg-amber-50 text-amber-700 border-amber-200">
-                                          {flag}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </TableCell>
                                 </TableRow>
                               );
                             });
@@ -300,7 +563,6 @@ export default function PeoBilling() {
                     </div>
                   </div>
 
-                  {/* Post-cutoff */}
                   {postCutoffData.length > 0 && (
                     <div className="space-y-4 border-t border-slate-200 pt-8 mt-8">
                       <div className="flex items-center justify-between">
@@ -324,7 +586,6 @@ export default function PeoBilling() {
                         <Table>
                           <TableHeader>
                             <TableRow className="hover:bg-transparent">
-                              <TableHead className="font-semibold text-slate-500">Group</TableHead>
                               <TableHead className="font-semibold text-slate-500">Member Name</TableHead>
                               <TableHead className="font-semibold text-slate-500">Event Type</TableHead>
                               <TableHead className="font-semibold text-slate-500">Effective Date</TableHead>
@@ -335,7 +596,6 @@ export default function PeoBilling() {
                           <TableBody>
                             {postCutoffData.map((item: any) => (
                               <TableRow key={item.id} className="hover:bg-slate-100">
-                                <TableCell className="font-medium text-slate-600">{item.companyName}</TableCell>
                                 <TableCell>
                                   <span className="font-semibold text-slate-700">{item.name}</span>
                                 </TableCell>
@@ -371,7 +631,6 @@ export default function PeoBilling() {
                       <Table>
                         <TableHeader className="bg-slate-50">
                           <TableRow>
-                            <TableHead className="font-semibold text-slate-600">Group</TableHead>
                             <TableHead className="font-semibold text-slate-600">Member Name</TableHead>
                             <TableHead className="font-semibold text-slate-600">Event Type</TableHead>
                             <TableHead className="font-semibold text-slate-600">Invoice Impacted</TableHead>
@@ -382,7 +641,6 @@ export default function PeoBilling() {
                         <TableBody>
                           {retroData.map((item: any) => (
                             <TableRow key={item.id} className="hover:bg-slate-50">
-                              <TableCell className="font-medium text-slate-700">{item.companyName}</TableCell>
                               <TableCell>
                                 <span className="font-semibold text-[#3A7D73] hover:underline cursor-pointer">{item.name}</span>
                               </TableCell>
@@ -400,7 +658,7 @@ export default function PeoBilling() {
                           ))}
                           {retroData.length === 0 && (
                             <TableRow>
-                              <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                              <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                                 No retro adjustments for this period.
                               </TableCell>
                             </TableRow>
@@ -415,7 +673,7 @@ export default function PeoBilling() {
           </>
         ) : (
           <div className="text-center py-20 text-muted-foreground">
-            No billing data available. Select a coverage period above.
+            No billing data available for this company and period.
           </div>
         )}
       </main>
@@ -423,7 +681,7 @@ export default function PeoBilling() {
       <MemberDetailSheet
         member={selectedMember}
         open={isSheetOpen}
-        onOpenChange={setIsSheetOpen}
+        onOpenChange={onSheetOpenChange}
       />
     </div>
   );

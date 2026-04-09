@@ -43,7 +43,6 @@ export function RetroTable({ data }: RetroTableProps) {
         <Table>
           <TableHeader className="bg-slate-50">
             <TableRow>
-              <TableHead className="font-semibold text-slate-600">Group</TableHead>
               <TableHead className="font-semibold text-slate-600">Member Name</TableHead>
               <TableHead className="font-semibold text-slate-600">Event Type</TableHead>
               <TableHead className="font-semibold text-slate-600">Invoice Impacted</TableHead>
@@ -54,7 +53,6 @@ export function RetroTable({ data }: RetroTableProps) {
           <TableBody>
             {data.map((item) => (
               <TableRow key={item.id} className="hover:bg-slate-50">
-                <TableCell className="font-medium text-slate-700">{item.worksite}</TableCell>
                 <TableCell>
                    <span className="font-semibold text-[#3A7D73] hover:underline cursor-pointer">
                     {item.name}

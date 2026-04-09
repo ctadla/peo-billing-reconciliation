@@ -86,7 +86,6 @@ export function BilledRosterTable({ data, onMemberClick }: BilledRosterProps) {
         <Table>
           <TableHeader className="bg-slate-50">
             <TableRow>
-              <TableHead className="font-semibold text-slate-600">Group</TableHead>
               <TableHead className="font-semibold text-slate-600">Member Name</TableHead>
               <TableHead className="font-semibold text-slate-600">Carrier</TableHead>
               <TableHead className="font-semibold text-slate-600">Line of Coverage</TableHead>
@@ -96,7 +95,6 @@ export function BilledRosterTable({ data, onMemberClick }: BilledRosterProps) {
               <TableHead className="font-semibold text-slate-600">Premium</TableHead>
               <TableHead className="font-semibold text-slate-600">Employee Cost</TableHead>
               <TableHead className="font-semibold text-slate-600">Dependent Cost</TableHead>
-              <TableHead className="font-semibold text-slate-600 text-right">Flags</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -110,7 +108,6 @@ export function BilledRosterTable({ data, onMemberClick }: BilledRosterProps) {
                   className={`hover:bg-slate-50 cursor-pointer transition-colors ${isNewMember ? "border-t-2 border-slate-200" : ""}`}
                   onClick={() => onMemberClick(member)}
                 >
-                  <TableCell className="font-medium text-slate-700">{isNewMember ? member.worksite : ""}</TableCell>
                   <TableCell>
                     {isNewMember ? (
                       <span className="font-semibold text-[#3A7D73] hover:underline">{member.name}</span>
@@ -130,15 +127,6 @@ export function BilledRosterTable({ data, onMemberClick }: BilledRosterProps) {
                   <TableCell>{formatCurrency(member.monthlyPremium)}</TableCell>
                   <TableCell className="text-muted-foreground">{formatCurrency(member.employeeCost)}</TableCell>
                   <TableCell className="text-muted-foreground">{formatCurrency(member.dependentCost)}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      {member.flags?.map(flag => (
-                        <Badge key={flag} variant="secondary" className="text-[10px] h-5 px-1.5 bg-amber-50 text-amber-700 border-amber-200">
-                          {flag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </TableCell>
                 </TableRow>
               );
             })}
