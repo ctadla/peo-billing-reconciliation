@@ -111,6 +111,10 @@ export default function InvoiceReconciliation() {
     effectiveDate: format(new Date(p.effectiveDate + "T00:00:00"), "MM/dd/yyyy"),
     expectedPremium: parseFloat(p.expectedPremium),
     expectedMonth: p.expectedMonth,
+    carrier: p.carrier || undefined,
+    lineOfCoverage: p.lineOfCoverage || undefined,
+    plan: p.plan || undefined,
+    tier: p.tier || undefined,
     processedAt: formatTimestamp(p.processedAt),
   })) || [];
 

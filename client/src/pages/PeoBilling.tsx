@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/layout/Header";
 import { SummaryCards } from "@/components/reconciliation/SummaryCards";
+import { PostCutoffTable } from "@/components/reconciliation/PostCutoffTable";
 import { MemberDetailSheet } from "@/components/reconciliation/MemberDetailSheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -381,12 +382,17 @@ function CompanyInvoiceView({
 
   const postCutoffData = billingData?.postCutoff?.map((p: any) => ({
     id: String(p.id),
+    worksite: p.worksite || "",
     companyName: p.companyName,
     name: p.memberName,
     eventType: p.eventType,
     effectiveDate: format(new Date(p.effectiveDate + "T00:00:00"), "MM/dd/yyyy"),
     expectedPremium: parseFloat(p.expectedPremium),
     expectedMonth: p.expectedMonth,
+    carrier: p.carrier || undefined,
+    lineOfCoverage: p.lineOfCoverage || undefined,
+    plan: p.plan || undefined,
+    tier: p.tier || undefined,
     processedAt: formatTimestamp(p.processedAt),
   })) || [];
 
@@ -539,57 +545,7 @@ function CompanyInvoiceView({
                   </div>
 
                   {postCutoffData.length > 0 && (
-                    <div className="space-y-4 border-t border-slate-200 pt-8 mt-8">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-serif font-bold text-slate-800">Post-Cutoff Changes</h3>
-                            <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border-amber-200 shadow-none font-normal gap-1">
-                              <AlertTriangle className="h-3 w-3" /> Not Billed Yet
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            Changes processed after the invoice cutoff. These will be reflected in the next billing cycle.
-                          </p>
-                        </div>
-                        <Button variant="outline" size="sm" className="h-8 gap-2">
-                          <Download className="h-3.5 w-3.5" /> Export CSV
-                        </Button>
-                      </div>
-
-                      <div className="rounded-md border bg-slate-50/50 border-slate-200 shadow-sm overflow-hidden opacity-90">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="hover:bg-transparent">
-                              <TableHead className="font-semibold text-slate-500">Member Name</TableHead>
-                              <TableHead className="font-semibold text-slate-500">Event Type</TableHead>
-                              <TableHead className="font-semibold text-slate-500">Effective Date</TableHead>
-                              <TableHead className="font-semibold text-slate-500">Expected Impact</TableHead>
-                              <TableHead className="font-semibold text-slate-500 text-right">Est. Premium</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {postCutoffData.map((item: any) => (
-                              <TableRow key={item.id} className="hover:bg-slate-100">
-                                <TableCell>
-                                  <span className="font-semibold text-slate-700">{item.name}</span>
-                                </TableCell>
-                                <TableCell>
-                                  <Badge variant="outline" className="bg-white text-slate-600 border-slate-200 font-normal">
-                                    {item.eventType}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="text-slate-600">{item.effectiveDate}</TableCell>
-                                <TableCell className="text-slate-600">{item.expectedMonth}</TableCell>
-                                <TableCell className="text-right font-medium text-slate-600">
-                                  {formatCurrency(item.expectedPremium)}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
+                    <PostCutoffTable data={postCutoffData} showWorksite={false} />
                   )}
                 </TabsContent>
 

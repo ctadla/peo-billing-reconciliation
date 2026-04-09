@@ -91,7 +91,10 @@ async function seed() {
 
   // March post-cutoff
   await db.insert(postCutoffChanges).values([
-    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Frank Castle", eventType: "New Hire Enrollment", effectiveDate: "2026-03-15", expectedPremium: "325.00", expectedMonth: "April 2026 Invoice", processedAt: new Date("2026-02-06T11:00:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Frank Castle", eventType: "New Hire Enrollment", effectiveDate: "2026-03-15", expectedPremium: "580.00", expectedMonth: "April 2026 Invoice", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Anthem Blue Cross PPO", tier: "Employee Only", processedAt: new Date("2026-02-06T11:00:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Frank Castle", eventType: "New Hire Enrollment", effectiveDate: "2026-03-15", expectedPremium: "45.00", expectedMonth: "April 2026 Invoice", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee Only", processedAt: new Date("2026-02-06T11:00:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Frank Castle", eventType: "New Hire Enrollment", effectiveDate: "2026-03-15", expectedPremium: "12.00", expectedMonth: "April 2026 Invoice", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee Only", processedAt: new Date("2026-02-06T11:00:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Frank Castle", eventType: "New Hire Enrollment", effectiveDate: "2026-03-15", expectedPremium: "18.50", expectedMonth: "April 2026 Invoice", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", processedAt: new Date("2026-02-06T11:00:00-08:00") },
   ]);
 
   // February & January rosters abbreviated for brevity - PEO seed handles full data

@@ -57,6 +57,10 @@ export const postCutoffChanges = pgTable("post_cutoff_changes", {
   effectiveDate: date("effective_date").notNull(),
   expectedPremium: numeric("expected_premium", { precision: 10, scale: 2 }).notNull(),
   expectedMonth: text("expected_month").notNull(),
+  carrier: text("carrier"),
+  lineOfCoverage: text("line_of_coverage"),
+  plan: text("plan"),
+  tier: text("tier"),
   processedAt: timestamp("processed_at").notNull(),
 });
 
