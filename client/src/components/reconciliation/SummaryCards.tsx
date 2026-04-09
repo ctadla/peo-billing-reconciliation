@@ -89,9 +89,6 @@ export function SummaryCards({ data }: SummaryProps) {
               </h3>
                <div className="mt-2">&nbsp;</div>
             </div>
-            <div className="bg-amber-100 p-2 rounded-full text-amber-700">
-              <AlertCircle className="h-5 w-5" />
-            </div>
           </div>
         </CardContent>
       </Card>
