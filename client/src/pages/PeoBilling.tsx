@@ -153,10 +153,10 @@ export default function PeoBilling() {
         <div className="flex items-end justify-between mb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Building2 className="h-5 w-5 text-[#3A7D73]" />
-              <span className="text-sm font-medium text-[#3A7D73] uppercase tracking-wider">PEO-Level View</span>
+              <Building2 className="h-5 w-5 text-[#0a8080]" />
+              <span className="text-sm font-medium text-[#0a8080] uppercase tracking-wider">PEO-Level View</span>
             </div>
-            <h2 className="text-3xl font-serif font-bold text-slate-800 tracking-tight">PEO Billing</h2>
+            <h2 className="text-3xl font-sans font-bold text-slate-800 tracking-tight">PEO Billing</h2>
             <p className="text-muted-foreground mt-1">Aggregated premium data across all groups. Select a company to view details.</p>
           </div>
           <div className="flex items-center gap-2">
@@ -179,12 +179,12 @@ export default function PeoBilling() {
 
         {aggLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-[#3A7D73]" />
+            <Loader2 className="h-8 w-8 animate-spin text-[#0a8080]" />
           </div>
         ) : aggregatedData?.summary ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-              <Card className="border-l-4 border-l-[#3A7D73] shadow-sm hover:shadow-md transition-shadow">
+              <Card className="border-l-4 border-l-[#0a8080] shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between">
                     <div>
@@ -194,7 +194,7 @@ export default function PeoBilling() {
                       </h3>
                       <p className="text-xs text-muted-foreground mt-2">{aggregatedData.summary.companyCount} groups · {aggregatedData.summary.invoiceCount} invoices</p>
                     </div>
-                    <div className="bg-[#3A7D73]/10 p-2 rounded-full text-[#3A7D73]">
+                    <div className="bg-[#0a8080]/10 p-2 rounded-full text-[#0a8080]">
                       <Calendar className="h-5 w-5" />
                     </div>
                   </div>
@@ -280,7 +280,7 @@ export default function PeoBilling() {
                           }}
                           data-testid={`company-option-${company}`}
                         >
-                          <Building2 className="h-4 w-4 text-[#3A7D73] shrink-0" />
+                          <Building2 className="h-4 w-4 text-[#0a8080] shrink-0" />
                           <span className="font-medium text-slate-700">{company}</span>
                         </button>
                       ))
@@ -415,7 +415,7 @@ function CompanyInvoiceView({
           <Button
             variant="ghost"
             size="sm"
-            className="text-[#3A7D73] hover:text-[#2d6359] hover:bg-[#3A7D73]/10 gap-1 mb-3 -ml-2"
+            className="text-[#0a8080] hover:text-[#005c5c] hover:bg-[#0a8080]/10 gap-1 mb-3 -ml-2"
             onClick={onBack}
             data-testid="button-back-to-landing"
           >
@@ -425,10 +425,10 @@ function CompanyInvoiceView({
           <div className="flex items-end justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Building2 className="h-5 w-5 text-[#3A7D73]" />
-                <span className="text-sm font-medium text-[#3A7D73] uppercase tracking-wider">Company View</span>
+                <Building2 className="h-5 w-5 text-[#0a8080]" />
+                <span className="text-sm font-medium text-[#0a8080] uppercase tracking-wider">Company View</span>
               </div>
-              <h2 className="text-3xl font-serif font-bold text-slate-800 tracking-tight">{companyName}</h2>
+              <h2 className="text-3xl font-sans font-bold text-slate-800 tracking-tight">{companyName}</h2>
               <p className="text-muted-foreground mt-1">Invoice details and billing data for this company.</p>
             </div>
             <div className="flex items-center gap-4">
@@ -470,7 +470,7 @@ function CompanyInvoiceView({
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-[#3A7D73]" />
+            <Loader2 className="h-8 w-8 animate-spin text-[#0a8080]" />
           </div>
         ) : summaryData ? (
           <>
@@ -479,10 +479,10 @@ function CompanyInvoiceView({
             <div className="space-y-6">
               <Tabs defaultValue="roster" className="w-full">
                 <TabsList className="bg-white border p-1 h-12 mb-6 w-full justify-start rounded-lg shadow-sm">
-                  <TabsTrigger value="roster" className="data-[state=active]:bg-[#3A7D73] data-[state=active]:text-white px-6 h-9" data-testid="peo-tab-roster">
+                  <TabsTrigger value="roster" className="data-[state=active]:bg-[#0a8080] data-[state=active]:text-white px-6 h-9" data-testid="peo-tab-roster">
                     Current Roster & Billing
                   </TabsTrigger>
-                  <TabsTrigger value="retro" className="data-[state=active]:bg-[#3A7D73] data-[state=active]:text-white px-6 h-9" data-testid="peo-tab-retro">
+                  <TabsTrigger value="retro" className="data-[state=active]:bg-[#0a8080] data-[state=active]:text-white px-6 h-9" data-testid="peo-tab-retro">
                     Retro Adjustments
                   </TabsTrigger>
                 </TabsList>
@@ -491,7 +491,7 @@ function CompanyInvoiceView({
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-serif font-bold text-slate-800">Billed Roster</h3>
+                        <h3 className="text-lg font-sans font-bold text-slate-800">Billed Roster</h3>
                         <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
                           {(() => { const filtered = coverageFilter === "all" ? rosterData : rosterData.filter((m: any) => m.lineOfCoverage === coverageFilter); return `${filtered.length} Line Items`; })()}
                         </Badge>
@@ -546,7 +546,7 @@ function CompanyInvoiceView({
                                 >
                                   <TableCell>
                                     {isNewMember ? (
-                                      <span className="font-semibold text-[#3A7D73] hover:underline">{member.name}</span>
+                                      <span className="font-semibold text-[#0a8080] hover:underline">{member.name}</span>
                                     ) : (
                                       <span className="text-transparent select-none">—</span>
                                     )}

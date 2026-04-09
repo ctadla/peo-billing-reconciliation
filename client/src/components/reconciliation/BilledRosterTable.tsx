@@ -58,7 +58,7 @@ export function BilledRosterTable({ data, onMemberClick }: BilledRosterProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-serif font-bold text-slate-800">Billed Roster</h3>
+          <h3 className="text-lg font-sans font-bold text-slate-800">Billed Roster</h3>
           <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
             {filteredData.length} Line Items
           </Badge>
@@ -110,7 +110,7 @@ export function BilledRosterTable({ data, onMemberClick }: BilledRosterProps) {
                 >
                   <TableCell>
                     {isNewMember ? (
-                      <span className="font-semibold text-[#3A7D73] hover:underline">{member.name}</span>
+                      <span className="font-semibold text-[#0a8080] hover:underline">{member.name}</span>
                     ) : (
                       <span className="text-transparent select-none">—</span>
                     )}

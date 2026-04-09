@@ -127,7 +127,7 @@ export default function InvoiceReconciliation() {
       <main className="container mx-auto px-6 py-8 max-w-7xl">
         <div className="flex items-end justify-between mb-6">
           <div>
-            <h2 className="text-3xl font-serif font-bold text-slate-800 tracking-tight">Invoice Reconciliation</h2>
+            <h2 className="text-3xl font-sans font-bold text-slate-800 tracking-tight">Invoice Reconciliation</h2>
             <p className="text-muted-foreground mt-1">Audit premiums, retro adjustments, and roster changes for this billing cycle.</p>
           </div>
           <div className="flex items-center gap-2">
@@ -150,7 +150,7 @@ export default function InvoiceReconciliation() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-[#3A7D73]" />
+            <Loader2 className="h-8 w-8 animate-spin text-[#0a8080]" />
           </div>
         ) : summaryData ? (
           <>
@@ -159,10 +159,10 @@ export default function InvoiceReconciliation() {
             <div className="space-y-6">
               <Tabs defaultValue="roster" className="w-full">
                 <TabsList className="bg-white border p-1 h-12 mb-6 w-full justify-start rounded-lg shadow-sm">
-                  <TabsTrigger value="roster" className="data-[state=active]:bg-[#3A7D73] data-[state=active]:text-white px-6 h-9" data-testid="tab-roster">
+                  <TabsTrigger value="roster" className="data-[state=active]:bg-[#0a8080] data-[state=active]:text-white px-6 h-9" data-testid="tab-roster">
                     Current Roster & Billing
                   </TabsTrigger>
-                  <TabsTrigger value="retro" className="data-[state=active]:bg-[#3A7D73] data-[state=active]:text-white px-6 h-9" data-testid="tab-retro">
+                  <TabsTrigger value="retro" className="data-[state=active]:bg-[#0a8080] data-[state=active]:text-white px-6 h-9" data-testid="tab-retro">
                     Retro Adjustments
                   </TabsTrigger>
                 </TabsList>

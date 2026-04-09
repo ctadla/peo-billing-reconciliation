@@ -23,7 +23,7 @@ export function SummaryCards({ data }: SummaryProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-      <Card className="border-l-4 border-l-[#3A7D73] shadow-sm hover:shadow-md transition-shadow">
+      <Card className="border-l-4 border-l-[#0a8080] shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="pt-6">
           <div className="flex items-start justify-between">
             <div>
@@ -40,7 +40,7 @@ export function SummaryCards({ data }: SummaryProps) {
                 </div>
               </div>
             </div>
-            <div className="bg-[#3A7D73]/10 p-2 rounded-full text-[#3A7D73]">
+            <div className="bg-[#0a8080]/10 p-2 rounded-full text-[#0a8080]">
               <Calendar className="h-5 w-5" />
             </div>
           </div>

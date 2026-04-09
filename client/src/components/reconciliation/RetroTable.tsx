@@ -79,7 +79,7 @@ export function RetroTable({ data }: RetroTableProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-serif font-bold text-slate-800">Retro Adjustments Included</h3>
+        <h3 className="text-lg font-sans font-bold text-slate-800">Retro Adjustments Included</h3>
         <Button variant="outline" size="sm" className="h-8 gap-2" data-testid="button-export-retro">
           <Download className="h-3.5 w-3.5" /> Export CSV
         </Button>
@@ -115,7 +115,7 @@ export function RetroTable({ data }: RetroTableProps) {
                       )}
                     </TableCell>
                     <TableCell>
-                      <span className="font-semibold text-[#3A7D73] hover:underline cursor-pointer">
+                      <span className="font-semibold text-[#0a8080] hover:underline cursor-pointer">
                         {group.name}
                       </span>
                     </TableCell>

@@ -17,13 +17,13 @@ export function Header({ activePage = "company" }: HeaderProps) {
 
   return (
     <div className="flex flex-col w-full">
-      <div className="bg-[#3A7D73] text-white px-6 py-2 flex items-center justify-between text-sm">
+      <div className="bg-[#1c1c1c] text-white px-6 py-2 flex items-center justify-between text-sm">
         <div className="flex items-center gap-6">
           <div
             className="flex items-center gap-2 font-bold text-lg tracking-tight cursor-pointer"
             onClick={() => navigate("/")}
           >
-            <span className="text-2xl">🦛</span> hippo
+            <span className="font-extrabold">Premium Auditor</span>
             <span className="opacity-70 font-normal text-xs uppercase tracking-widest ml-1">Production</span>
           </div>
 
@@ -51,7 +51,7 @@ export function Header({ activePage = "company" }: HeaderProps) {
                     }}
                     data-testid="nav-peo-billing"
                   >
-                    <Building2 className="h-4 w-4 text-[#3A7D73]" />
+                    <Building2 className="h-4 w-4 text-[#0a8080]" />
                     PEO Billing
                   </button>
                 </div>
@@ -89,7 +89,7 @@ export function Header({ activePage = "company" }: HeaderProps) {
               <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 text-slate-500">
                 <Building2 className="h-5 w-5" />
               </div>
-              <h1 className="text-2xl font-serif font-bold text-slate-800 flex items-center gap-3">
+              <h1 className="text-2xl font-sans font-bold text-slate-800 flex items-center gap-3">
                 Matt Morgan Design Inc.
                 <span className="bg-[#D95D4E] text-white text-xs font-sans font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
                   CA | 2
@@ -97,19 +97,19 @@ export function Header({ activePage = "company" }: HeaderProps) {
               </h1>
             </div>
 
-            <div className="flex items-center gap-4 text-sm text-[#3A7D73] font-medium">
+            <div className="flex items-center gap-4 text-sm text-[#0a8080] font-medium">
               <a href="#" className="hover:underline">go to panda ▸</a>
               <a href="#" className="hover:underline">become payroll admin ▸</a>
             </div>
           </div>
 
           <nav className="flex items-center gap-8 text-sm font-medium text-slate-600">
-            <a href="#" className="pb-2 text-[#3A7D73] border-b-2 border-[#3A7D73]">Company</a>
-            <a href="#" className="pb-2 hover:text-[#3A7D73]">Employees</a>
-            <a href="#" className="pb-2 hover:text-[#3A7D73]">Employee Benefits</a>
-            <a href="#" className="pb-2 hover:text-[#3A7D73]">Policies</a>
-            <a href="#" className="pb-2 hover:text-[#3A7D73]">NPR & BoR</a>
-            <a href="#" className="pb-2 hover:text-[#3A7D73]">Other</a>
+            <a href="#" className="pb-2 text-[#0a8080] border-b-2 border-[#0a8080]">Company</a>
+            <a href="#" className="pb-2 hover:text-[#0a8080]">Employees</a>
+            <a href="#" className="pb-2 hover:text-[#0a8080]">Employee Benefits</a>
+            <a href="#" className="pb-2 hover:text-[#0a8080]">Policies</a>
+            <a href="#" className="pb-2 hover:text-[#0a8080]">NPR & BoR</a>
+            <a href="#" className="pb-2 hover:text-[#0a8080]">Other</a>
           </nav>
         </div>
       )}

@@ -36,7 +36,7 @@ export function MemberDetailSheet({ member, open, onOpenChange }: MemberDetailSh
         <SheetHeader className="mb-6">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <SheetTitle className="text-2xl font-serif">{member.name}</SheetTitle>
+              <SheetTitle className="text-2xl font-sans">{member.name}</SheetTitle>
               <SheetDescription className="flex items-center gap-2">
                 <Badge variant="outline" className="font-normal">{member.employeeId}</Badge>
                 <span>•</span>
@@ -87,7 +87,7 @@ export function MemberDetailSheet({ member, open, onOpenChange }: MemberDetailSh
               </h4>
               <div className="relative border-l border-slate-200 ml-2 space-y-6 pl-6 py-2">
                 <div className="relative">
-                  <div className="absolute -left-[29px] top-1 h-3 w-3 rounded-full bg-[#3A7D73] ring-4 ring-white"></div>
+                  <div className="absolute -left-[29px] top-1 h-3 w-3 rounded-full bg-[#0a8080] ring-4 ring-white"></div>
                   <div className="flex flex-col">
                     <span className="text-sm font-semibold text-slate-800">Open Enrollment Change</span>
                     <span className="text-xs text-muted-foreground">Effective Jan 1, 2026</span>

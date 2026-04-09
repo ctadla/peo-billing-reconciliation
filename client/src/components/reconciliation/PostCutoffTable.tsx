@@ -81,7 +81,7 @@ export function PostCutoffTable({ data }: PostCutoffTableProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-amber-500" />
-          <h3 className="text-lg font-serif font-bold text-slate-800">Post-Cutoff Changes</h3>
+          <h3 className="text-lg font-sans font-bold text-slate-800">Post-Cutoff Changes</h3>
           <p className="text-sm text-muted-foreground">
             Changes processed after the invoice cutoff. These will be reflected in the next billing cycle.
           </p>
