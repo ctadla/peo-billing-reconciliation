@@ -573,12 +573,12 @@ function CompanyInvoiceView({
                   </div>
 
                   {postCutoffData.length > 0 && (
-                    <PostCutoffTable data={postCutoffData} showWorksite={false} />
+                    <PostCutoffTable data={postCutoffData} />
                   )}
                 </TabsContent>
 
                 <TabsContent value="retro" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <RetroTable data={retroData} showWorksite={false} />
+                  <RetroTable data={retroData} />
                 </TabsContent>
               </Tabs>
             </div>

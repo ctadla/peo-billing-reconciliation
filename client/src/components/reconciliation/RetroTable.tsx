@@ -29,21 +29,18 @@ interface RetroAdjustment {
 
 interface RetroTableProps {
   data: RetroAdjustment[];
-  showWorksite?: boolean;
 }
 
 interface RetroGroup {
   key: string;
   name: string;
-  worksite: string;
   eventType: string;
   originalPeriod: string;
-  effectiveDate: string;
   totalAmount: number;
   lines: RetroAdjustment[];
 }
 
-export function RetroTable({ data, showWorksite = true }: RetroTableProps) {
+export function RetroTable({ data }: RetroTableProps) {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const formatCurrency = (val: number) =>
@@ -67,10 +64,8 @@ export function RetroTable({ data, showWorksite = true }: RetroTableProps) {
       group = {
         key,
         name: item.name,
-        worksite: item.worksite,
         eventType: item.eventType,
         originalPeriod: item.originalPeriod,
-        effectiveDate: item.effectiveDate,
         totalAmount: 0,
         lines: [],
       };
@@ -96,7 +91,6 @@ export function RetroTable({ data, showWorksite = true }: RetroTableProps) {
             <TableRow>
               <TableHead className="w-8"></TableHead>
               <TableHead className="font-semibold text-slate-600">Member Name</TableHead>
-              {showWorksite && <TableHead className="font-semibold text-slate-600">Worksite</TableHead>}
               <TableHead className="font-semibold text-slate-600">Event Type</TableHead>
               <TableHead className="font-semibold text-slate-600">Invoice Impacted</TableHead>
               <TableHead className="font-semibold text-slate-600">Effective</TableHead>
@@ -125,14 +119,13 @@ export function RetroTable({ data, showWorksite = true }: RetroTableProps) {
                         {group.name}
                       </span>
                     </TableCell>
-                    {showWorksite && <TableCell className="font-medium text-slate-600">{group.worksite}</TableCell>}
                     <TableCell>
                       <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 font-normal">
                         {group.eventType}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">{group.originalPeriod}</TableCell>
-                    <TableCell>{group.effectiveDate}</TableCell>
+                    <TableCell></TableCell>
                     <TableCell className={`text-right font-medium ${group.totalAmount < 0 ? "text-rose-600" : "text-emerald-600"}`}>
                       {group.totalAmount > 0 ? "+" : ""}{formatCurrency(group.totalAmount)}
                     </TableCell>
@@ -147,7 +140,6 @@ export function RetroTable({ data, showWorksite = true }: RetroTableProps) {
                         <span className="ml-2 text-sm text-slate-600">{line.lineOfCoverage}</span>
                         <span className="ml-2 text-xs text-slate-400">{line.plan} · {line.tier}</span>
                       </TableCell>
-                      {showWorksite && <TableCell></TableCell>}
                       <TableCell></TableCell>
                       <TableCell className="text-sm text-muted-foreground">{line.originalPeriod}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{line.effectiveDate}</TableCell>
@@ -161,7 +153,7 @@ export function RetroTable({ data, showWorksite = true }: RetroTableProps) {
             })}
             {grouped.length === 0 && (
               <TableRow>
-                <TableCell colSpan={showWorksite ? 7 : 6} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                   No retro adjustments for this period.
                 </TableCell>
               </TableRow>

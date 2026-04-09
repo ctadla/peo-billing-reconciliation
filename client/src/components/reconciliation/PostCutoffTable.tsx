@@ -13,7 +13,6 @@ import { Download, AlertTriangle, ChevronDown, ChevronRight } from "lucide-react
 
 interface PostCutoffChange {
   id: string;
-  worksite: string;
   name: string;
   eventType: string;
   effectiveDate: string;
@@ -29,7 +28,6 @@ interface PostCutoffChange {
 interface GroupedMember {
   key: string;
   name: string;
-  worksite: string;
   eventType: string;
   effectiveDate: string;
   expectedMonth: string;
@@ -39,7 +37,6 @@ interface GroupedMember {
 
 interface PostCutoffTableProps {
   data: PostCutoffChange[];
-  showWorksite?: boolean;
 }
 
 function groupByMember(data: PostCutoffChange[]): GroupedMember[] {
@@ -50,7 +47,6 @@ function groupByMember(data: PostCutoffChange[]): GroupedMember[] {
       groups[key] = {
         key,
         name: item.name,
-        worksite: item.worksite,
         eventType: item.eventType,
         effectiveDate: item.effectiveDate,
         expectedMonth: item.expectedMonth,
@@ -64,14 +60,15 @@ function groupByMember(data: PostCutoffChange[]): GroupedMember[] {
   return Object.values(groups);
 }
 
-export function PostCutoffTable({ data, showWorksite = true }: PostCutoffTableProps) {
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+const formatCurrency = (val: number) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(val);
 
-  const formatCurrency = (val: number) => 
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+export function PostCutoffTable({ data }: PostCutoffTableProps) {
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const grouped = groupByMember(data);
 
   const toggleRow = (key: string) => {
-    setExpandedRows(prev => {
+    setExpandedRows((prev) => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
       else next.add(key);
@@ -79,19 +76,12 @@ export function PostCutoffTable({ data, showWorksite = true }: PostCutoffTablePr
     });
   };
 
-  const grouped = groupByMember(data);
-  const colCount = showWorksite ? 6 : 5;
-
   return (
-    <div className="space-y-4 border-t border-slate-200 pt-8 mt-8">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-serif font-bold text-slate-800">Post-Cutoff Changes</h3>
-            <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border-amber-200 shadow-none font-normal gap-1">
-              <AlertTriangle className="h-3 w-3" /> Not Billed Yet
-            </Badge>
-          </div>
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 text-amber-500" />
+          <h3 className="text-lg font-serif font-bold text-slate-800">Post-Cutoff Changes</h3>
           <p className="text-sm text-muted-foreground">
             Changes processed after the invoice cutoff. These will be reflected in the next billing cycle.
           </p>
@@ -107,7 +97,6 @@ export function PostCutoffTable({ data, showWorksite = true }: PostCutoffTablePr
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-8"></TableHead>
               <TableHead className="font-semibold text-slate-500">Member</TableHead>
-              {showWorksite && <TableHead className="font-semibold text-slate-500">Worksite</TableHead>}
               <TableHead className="font-semibold text-slate-500">Event Type</TableHead>
               <TableHead className="font-semibold text-slate-500">Effective Date</TableHead>
               <TableHead className="font-semibold text-slate-500">Expected Impact</TableHead>
@@ -134,13 +123,12 @@ export function PostCutoffTable({ data, showWorksite = true }: PostCutoffTablePr
                     <TableCell>
                       <span className="font-semibold text-slate-700">{group.name}</span>
                     </TableCell>
-                    {showWorksite && <TableCell className="font-medium text-slate-600">{group.worksite}</TableCell>}
                     <TableCell>
                       <Badge variant="outline" className="bg-white text-slate-600 border-slate-200 font-normal">
                         {group.eventType}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-slate-600">{group.effectiveDate}</TableCell>
+                    <TableCell></TableCell>
                     <TableCell className="text-slate-600">{group.expectedMonth}</TableCell>
                     <TableCell className="text-right font-medium text-slate-600">
                       {formatCurrency(group.totalPremium)}
@@ -156,7 +144,6 @@ export function PostCutoffTable({ data, showWorksite = true }: PostCutoffTablePr
                         <span className="ml-2 text-sm text-slate-600">{line.lineOfCoverage}</span>
                         <span className="ml-2 text-xs text-slate-400">{line.plan} · {line.tier}</span>
                       </TableCell>
-                      {showWorksite && <TableCell></TableCell>}
                       <TableCell></TableCell>
                       <TableCell className="text-sm text-muted-foreground">{line.effectiveDate}</TableCell>
                       <TableCell></TableCell>
