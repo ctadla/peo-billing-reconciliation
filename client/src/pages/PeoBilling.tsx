@@ -138,6 +138,8 @@ export default function PeoBilling() {
         selectedMember={selectedMember}
         isSheetOpen={isSheetOpen}
         onSheetOpenChange={setIsSheetOpen}
+        companies={companies || []}
+        onCompanyChange={handleSelectCompany}
       />
     );
   }
@@ -322,6 +324,8 @@ interface CompanyInvoiceViewProps {
   selectedMember: any;
   isSheetOpen: boolean;
   onSheetOpenChange: (open: boolean) => void;
+  companies: string[];
+  onCompanyChange: (company: string) => void;
 }
 
 function CompanyInvoiceView({
@@ -339,6 +343,8 @@ function CompanyInvoiceView({
   selectedMember,
   isSheetOpen,
   onSheetOpenChange,
+  companies,
+  onCompanyChange,
 }: CompanyInvoiceViewProps) {
   const summaryData = billingData?.summary
     ? {
@@ -421,21 +427,39 @@ function CompanyInvoiceView({
               <h2 className="text-3xl font-serif font-bold text-slate-800 tracking-tight">{companyName}</h2>
               <p className="text-muted-foreground mt-1">Invoice details and billing data for this company.</p>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-slate-600">Invoice Month:</span>
-              <Select value={activePeriod} onValueChange={onPeriodChange}>
-                <SelectTrigger className="w-[260px] bg-white border-slate-200" data-testid="select-company-period">
-                  <Calendar className="w-4 h-4 mr-2 text-slate-500" />
-                  <SelectValue placeholder="Select coverage period" />
-                </SelectTrigger>
-                <SelectContent>
-                  {periods?.slice().reverse().map((p: any) => (
-                    <SelectItem key={p.start} value={p.start} data-testid={`company-period-${p.start}`}>
-                      {formatPeriodLabel(p.start, p.end)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-slate-600">Company:</span>
+                <Select value={companyName} onValueChange={onCompanyChange}>
+                  <SelectTrigger className="w-[240px] bg-white border-slate-200" data-testid="select-company-picker">
+                    <Building2 className="w-4 h-4 mr-2 text-slate-500" />
+                    <SelectValue placeholder="Select company" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {companies?.slice().sort((a, b) => a.localeCompare(b)).map((c: string) => (
+                      <SelectItem key={c} value={c} data-testid={`company-picker-${c}`}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-slate-600">Invoice Month:</span>
+                <Select value={activePeriod} onValueChange={onPeriodChange}>
+                  <SelectTrigger className="w-[260px] bg-white border-slate-200" data-testid="select-company-period">
+                    <Calendar className="w-4 h-4 mr-2 text-slate-500" />
+                    <SelectValue placeholder="Select coverage period" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {periods?.slice().reverse().map((p: any) => (
+                      <SelectItem key={p.start} value={p.start} data-testid={`company-period-${p.start}`}>
+                        {formatPeriodLabel(p.start, p.end)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
