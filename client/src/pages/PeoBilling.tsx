@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/layout/Header";
 import { SummaryCards } from "@/components/reconciliation/SummaryCards";
@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Calendar, Loader2, Download, Filter, AlertTriangle, Building2, ArrowLeft, Search, DollarSign, FileText, AlertCircle, ChevronRight } from "lucide-react";
+import { Calendar, Loader2, Download, Filter, AlertTriangle, Building2, ArrowLeft, Search, DollarSign, FileText, AlertCircle, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 
 function formatPeriodLabel(start: string, end: string) {
@@ -48,7 +48,19 @@ export default function PeoBilling() {
   const [selectedPeriod, setSelectedPeriod] = useState<string>("");
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [companySearch, setCompanySearch] = useState("");
+  const [comboboxOpen, setComboboxOpen] = useState(false);
   const [coverageFilter, setCoverageFilter] = useState<string>("all");
+  const comboboxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (comboboxRef.current && !comboboxRef.current.contains(e.target as Node)) {
+        setComboboxOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const { data: periods } = useQuery({
     queryKey: ["/api/peo/periods"],
@@ -107,17 +119,6 @@ export default function PeoBilling() {
     c.toLowerCase().includes(companySearch.toLowerCase())
   ) || [];
 
-  const companyTotals = aggregatedData?.invoices?.reduce((acc: any, inv: any) => {
-    const name = inv.companyName;
-    if (!acc[name]) {
-      acc[name] = { totalRemitted: 0, basePremium: 0, retroTotal: 0, invoiceCount: 0 };
-    }
-    acc[name].totalRemitted += parseFloat(inv.totalRemitted);
-    acc[name].basePremium += parseFloat(inv.basePremiumTotal);
-    acc[name].retroTotal += parseFloat(inv.retroTotal);
-    acc[name].invoiceCount += 1;
-    return acc;
-  }, {} as Record<string, any>) || {};
 
   if (selectedCompany) {
     return (
@@ -244,74 +245,48 @@ export default function PeoBilling() {
               </Card>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-serif font-bold text-slate-800">Companies</h3>
-                <div className="relative w-[300px]">
+            <div className="space-y-3 max-w-md">
+              <label className="text-sm font-medium text-slate-700">Select a company to view billing details</label>
+              <div className="relative" ref={comboboxRef}>
+                <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
-                    placeholder="Search companies..."
+                    placeholder="Search or select a company..."
                     value={companySearch}
-                    onChange={(e) => setCompanySearch(e.target.value)}
-                    className="pl-9 bg-white border-slate-200"
+                    onChange={(e) => {
+                      setCompanySearch(e.target.value);
+                      setComboboxOpen(true);
+                    }}
+                    onFocus={() => setComboboxOpen(true)}
+                    className="pl-9 pr-10 h-11 bg-white border-slate-200 text-base"
                     data-testid="input-company-search"
                   />
+                  <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 transition-transform ${comboboxOpen ? "rotate-180" : ""}`} />
                 </div>
-              </div>
-
-              <div className="rounded-md border bg-white shadow-sm overflow-hidden">
-                <Table>
-                  <TableHeader className="bg-slate-50">
-                    <TableRow>
-                      <TableHead className="font-semibold text-slate-600">Company Name</TableHead>
-                      <TableHead className="font-semibold text-slate-600 text-right">Total Remitted</TableHead>
-                      <TableHead className="font-semibold text-slate-600 text-right">Base Premium</TableHead>
-                      <TableHead className="font-semibold text-slate-600 text-right">Retro Total</TableHead>
-                      <TableHead className="w-10"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredCompanies.map((company: string) => {
-                      const totals = companyTotals[company];
-                      return (
-                        <TableRow
+                {comboboxOpen && (
+                  <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white rounded-md border border-slate-200 shadow-lg max-h-[280px] overflow-y-auto">
+                    {filteredCompanies.length > 0 ? (
+                      filteredCompanies.map((company: string) => (
+                        <button
                           key={company}
-                          className="hover:bg-slate-50 cursor-pointer transition-colors"
-                          onClick={() => handleSelectCompany(company)}
-                          data-testid={`company-row-${company}`}
+                          className="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 flex items-center gap-2 transition-colors border-b border-slate-100 last:border-b-0"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleSelectCompany(company);
+                          }}
+                          data-testid={`company-option-${company}`}
                         >
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <div className="h-8 w-8 rounded-full bg-[#3A7D73]/10 flex items-center justify-center">
-                                <Building2 className="h-4 w-4 text-[#3A7D73]" />
-                              </div>
-                              <span className="font-semibold text-[#3A7D73] hover:underline">{company}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right font-medium">
-                            {totals ? formatCurrency(totals.totalRemitted) : "—"}
-                          </TableCell>
-                          <TableCell className="text-right text-muted-foreground">
-                            {totals ? formatCurrency(totals.basePremium) : "—"}
-                          </TableCell>
-                          <TableCell className={`text-right font-medium ${totals?.retroTotal < 0 ? 'text-rose-600' : ''}`}>
-                            {totals ? formatCurrency(totals.retroTotal) : "—"}
-                          </TableCell>
-                          <TableCell>
-                            <ChevronRight className="h-4 w-4 text-slate-400" />
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                    {filteredCompanies.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                          No companies found.
-                        </TableCell>
-                      </TableRow>
+                          <Building2 className="h-4 w-4 text-[#3A7D73] shrink-0" />
+                          <span className="font-medium text-slate-700">{company}</span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-sm text-muted-foreground text-center">
+                        No companies found.
+                      </div>
                     )}
-                  </TableBody>
-                </Table>
+                  </div>
+                )}
               </div>
             </div>
           </>
