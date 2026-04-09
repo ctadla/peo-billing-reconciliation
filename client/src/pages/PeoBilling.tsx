@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/layout/Header";
 import { SummaryCards } from "@/components/reconciliation/SummaryCards";
 import { PostCutoffTable } from "@/components/reconciliation/PostCutoffTable";
+import { RetroTable } from "@/components/reconciliation/RetroTable";
 import { MemberDetailSheet } from "@/components/reconciliation/MemberDetailSheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -377,12 +378,17 @@ function CompanyInvoiceView({
   const retroData = billingData?.retro?.map((r: any) => ({
     id: String(r.id),
     companyName: r.companyName,
+    worksite: r.worksite || "",
     name: r.memberName,
     eventType: r.eventType,
     originalPeriod: r.originalPeriod,
     effectiveDate: format(new Date(r.effectiveDate + "T00:00:00"), "MM/dd/yyyy"),
     amount: parseFloat(r.amount),
     reason: r.reasonCode,
+    carrier: r.carrier || undefined,
+    lineOfCoverage: r.lineOfCoverage || undefined,
+    plan: r.plan || undefined,
+    tier: r.tier || undefined,
     processedAt: formatTimestamp(r.processedAt),
   })) || [];
 
@@ -574,54 +580,7 @@ function CompanyInvoiceView({
                 </TabsContent>
 
                 <TabsContent value="retro" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-serif font-bold text-slate-800">Retro Adjustments Included</h3>
-                      <Button variant="outline" size="sm" className="h-8 gap-2">
-                        <Download className="h-3.5 w-3.5" /> Export CSV
-                      </Button>
-                    </div>
-
-                    <div className="rounded-md border bg-white shadow-sm overflow-hidden">
-                      <Table>
-                        <TableHeader className="bg-slate-50">
-                          <TableRow>
-                            <TableHead className="font-semibold text-slate-600">Member Name</TableHead>
-                            <TableHead className="font-semibold text-slate-600">Event Type</TableHead>
-                            <TableHead className="font-semibold text-slate-600">Invoice Impacted</TableHead>
-                            <TableHead className="font-semibold text-slate-600">Effective</TableHead>
-                            <TableHead className="font-semibold text-slate-600 text-right">Adjustment</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {retroData.map((item: any) => (
-                            <TableRow key={item.id} className="hover:bg-slate-50">
-                              <TableCell>
-                                <span className="font-semibold text-[#3A7D73] hover:underline cursor-pointer">{item.name}</span>
-                              </TableCell>
-                              <TableCell>
-                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 font-normal">
-                                  {item.eventType}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-muted-foreground">{item.originalPeriod}</TableCell>
-                              <TableCell>{item.effectiveDate}</TableCell>
-                              <TableCell className={`text-right font-medium ${item.amount < 0 ? "text-rose-600" : "text-emerald-600"}`}>
-                                {item.amount > 0 ? "+" : ""}{formatCurrency(item.amount)}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                          {retroData.length === 0 && (
-                            <TableRow>
-                              <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                                No retro adjustments for this period.
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
+                  <RetroTable data={retroData} showWorksite={false} />
                 </TabsContent>
               </Tabs>
             </div>

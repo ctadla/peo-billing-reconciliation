@@ -59,14 +59,19 @@ async function seedPEO() {
   ]);
 
   await db.insert(retroAdjustments).values([
-    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "Maria Garcia", eventType: "Qualifying Life Event", originalPeriod: "Feb 2026", effectiveDate: "2026-02-10", amount: "240.00", reasonCode: "New dependent added via birth QLE", processedAt: new Date("2026-02-03T11:00:00-08:00") },
+    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "Maria Garcia", eventType: "Benefit Change", originalPeriod: "Feb 2026", effectiveDate: "2026-02-10", amount: "155.00", reasonCode: "New dependent added via birth", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Aetna Select PPO", tier: "Family", processedAt: new Date("2026-02-03T11:00:00-08:00") },
+    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "Maria Garcia", eventType: "Benefit Change", originalPeriod: "Feb 2026", effectiveDate: "2026-02-10", amount: "40.00", reasonCode: "New dependent added via birth", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Family", processedAt: new Date("2026-02-03T11:00:00-08:00") },
+    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "Maria Garcia", eventType: "Benefit Change", originalPeriod: "Feb 2026", effectiveDate: "2026-02-10", amount: "25.00", reasonCode: "New dependent added via birth", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Family", processedAt: new Date("2026-02-03T11:00:00-08:00") },
+    { invoiceId: bhMar.id, worksite: "Denver HQ", memberName: "Maria Garcia", eventType: "Benefit Change", originalPeriod: "Feb 2026", effectiveDate: "2026-02-10", amount: "20.00", reasonCode: "New dependent added via birth", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", processedAt: new Date("2026-02-03T11:00:00-08:00") },
   ]);
 
   await db.insert(retroAdjustments).values([
-    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "Tom Harris", eventType: "Plan Change", originalPeriod: "Dec 2025", effectiveDate: "2025-12-01", amount: "-120.00", reasonCode: "Late plan correction refund", processedAt: new Date("2025-12-02T15:00:00-08:00") },
+    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "Tom Harris", eventType: "Cancelled Benefits", originalPeriod: "Dec 2025", effectiveDate: "2025-12-01", amount: "-62.00", reasonCode: "Late plan correction refund", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Aetna Select PPO", tier: "Employee Only", processedAt: new Date("2025-12-02T15:00:00-08:00") },
+    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "Tom Harris", eventType: "Cancelled Benefits", originalPeriod: "Dec 2025", effectiveDate: "2025-12-01", amount: "-22.50", reasonCode: "Late plan correction refund", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee Only", processedAt: new Date("2025-12-02T15:00:00-08:00") },
+    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "Tom Harris", eventType: "Cancelled Benefits", originalPeriod: "Dec 2025", effectiveDate: "2025-12-01", amount: "-17.00", reasonCode: "Late plan correction refund", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee Only", processedAt: new Date("2025-12-02T15:00:00-08:00") },
+    { invoiceId: bhJan.id, worksite: "Denver HQ", memberName: "Tom Harris", eventType: "Cancelled Benefits", originalPeriod: "Dec 2025", effectiveDate: "2025-12-01", amount: "-18.50", reasonCode: "Late plan correction refund", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", processedAt: new Date("2025-12-02T15:00:00-08:00") },
   ]);
 
-  // Cascade Digital Solutions
   const [cdMar] = await db.insert(invoices).values({
     coveragePeriodStart: "2026-03-01",
     coveragePeriodEnd: "2026-03-31",
@@ -96,7 +101,10 @@ async function seedPEO() {
   ]);
 
   await db.insert(retroAdjustments).values([
-    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Derek Tanaka", eventType: "Termination", originalPeriod: "Feb 2026", effectiveDate: "2026-02-20", amount: "-175.00", reasonCode: "Dependent aged out - tier change", processedAt: new Date("2026-02-03T09:30:00-08:00") },
+    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Derek Tanaka", eventType: "Cancelled Benefits", originalPeriod: "Feb 2026", effectiveDate: "2026-02-20", amount: "-98.00", reasonCode: "Dependent aged out - tier change", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Premera Blue Cross", tier: "Employee + Children", processedAt: new Date("2026-02-03T09:30:00-08:00") },
+    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Derek Tanaka", eventType: "Cancelled Benefits", originalPeriod: "Feb 2026", effectiveDate: "2026-02-20", amount: "-35.00", reasonCode: "Dependent aged out - tier change", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee + Children", processedAt: new Date("2026-02-03T09:30:00-08:00") },
+    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Derek Tanaka", eventType: "Cancelled Benefits", originalPeriod: "Feb 2026", effectiveDate: "2026-02-20", amount: "-24.00", reasonCode: "Dependent aged out - tier change", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee + Children", processedAt: new Date("2026-02-03T09:30:00-08:00") },
+    { invoiceId: cdMar.id, worksite: "Seattle Office", memberName: "Derek Tanaka", eventType: "Cancelled Benefits", originalPeriod: "Feb 2026", effectiveDate: "2026-02-20", amount: "-18.00", reasonCode: "Dependent aged out - tier change", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", processedAt: new Date("2026-02-03T09:30:00-08:00") },
   ]);
 
   await db.insert(postCutoffChanges).values([

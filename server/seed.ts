@@ -51,7 +51,6 @@ async function seed() {
     basePremiumTotal: "22485.00",
   }).returning();
 
-  // March roster - grouped by member, each with Medical + Dental + Vision + Life/Disability
   await db.insert(billedRosterMembers).values([
     { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Kaiser Silver HMO", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "650.00", employeeCost: "650.00", dependentCost: "0.00" },
     { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Alice Johnson", employeeId: "E001", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee Only", coverageEffectiveDate: "2026-01-01", monthlyPremium: "45.00", employeeCost: "45.00", dependentCost: "0.00" },
@@ -83,13 +82,21 @@ async function seed() {
     { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "George Kim", employeeId: "E018", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", coverageEffectiveDate: "2025-09-01", monthlyPremium: "18.50", employeeCost: "18.50", dependentCost: "0.00" },
   ]);
 
-  // March retro
   await db.insert(retroAdjustments).values([
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", eventType: "Qualifying Life Event", originalPeriod: "Feb 2026", effectiveDate: "2026-02-01", amount: "185.00", reasonCode: "Added dependent retroactively", processedAt: new Date("2026-02-02T14:30:00-08:00") },
-    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", eventType: "Termination", originalPeriod: "Jan 2026", effectiveDate: "2026-01-15", amount: "-505.50", reasonCode: "Terminated mid-month", processedAt: new Date("2026-02-01T09:15:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", eventType: "Benefit Change", originalPeriod: "Feb 2026", effectiveDate: "2026-02-01", amount: "120.00", reasonCode: "Added dependent retroactively", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Kaiser Gold PPO", tier: "Family", processedAt: new Date("2026-02-02T14:30:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", eventType: "Benefit Change", originalPeriod: "Feb 2026", effectiveDate: "2026-02-01", amount: "40.00", reasonCode: "Added dependent retroactively", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Family", processedAt: new Date("2026-02-02T14:30:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", eventType: "Benefit Change", originalPeriod: "Feb 2026", effectiveDate: "2026-02-01", amount: "15.00", reasonCode: "Added dependent retroactively", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Family", processedAt: new Date("2026-02-02T14:30:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Bob Smith", eventType: "Benefit Change", originalPeriod: "Feb 2026", effectiveDate: "2026-02-01", amount: "10.00", reasonCode: "Added dependent retroactively", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", processedAt: new Date("2026-02-02T14:30:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", eventType: "Cancelled Benefits", originalPeriod: "Jan 2026", effectiveDate: "2026-01-15", amount: "-325.00", reasonCode: "Terminated mid-month", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Kaiser Silver HMO", tier: "Employee Only", processedAt: new Date("2026-02-01T09:15:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", eventType: "Cancelled Benefits", originalPeriod: "Jan 2026", effectiveDate: "2026-01-15", amount: "-22.50", reasonCode: "Terminated mid-month", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee Only", processedAt: new Date("2026-02-01T09:15:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", eventType: "Cancelled Benefits", originalPeriod: "Jan 2026", effectiveDate: "2026-01-15", amount: "-6.00", reasonCode: "Terminated mid-month", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee Only", processedAt: new Date("2026-02-01T09:15:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "San Francisco HQ", memberName: "Sarah Connor", eventType: "Cancelled Benefits", originalPeriod: "Jan 2026", effectiveDate: "2026-01-15", amount: "-152.00", reasonCode: "Terminated mid-month", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", processedAt: new Date("2026-02-01T09:15:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Charlie Davis", eventType: "New Hire", originalPeriod: "Feb 2026", effectiveDate: "2026-02-15", amount: "580.00", reasonCode: "Late-processed new hire retro", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Anthem Blue Cross PPO", tier: "Employee + Spouse", processedAt: new Date("2026-02-03T16:00:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Charlie Davis", eventType: "New Hire", originalPeriod: "Feb 2026", effectiveDate: "2026-02-15", amount: "45.00", reasonCode: "Late-processed new hire retro", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee + Spouse", processedAt: new Date("2026-02-03T16:00:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Charlie Davis", eventType: "New Hire", originalPeriod: "Feb 2026", effectiveDate: "2026-02-15", amount: "12.00", reasonCode: "Late-processed new hire retro", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee + Spouse", processedAt: new Date("2026-02-03T16:00:00-08:00") },
+    { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Charlie Davis", eventType: "New Hire", originalPeriod: "Feb 2026", effectiveDate: "2026-02-15", amount: "18.50", reasonCode: "Late-processed new hire retro", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", processedAt: new Date("2026-02-03T16:00:00-08:00") },
   ]);
 
-  // March post-cutoff
   await db.insert(postCutoffChanges).values([
     { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Frank Castle", eventType: "New Hire Enrollment", effectiveDate: "2026-03-15", expectedPremium: "580.00", expectedMonth: "April 2026 Invoice", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Anthem Blue Cross PPO", tier: "Employee Only", processedAt: new Date("2026-02-06T11:00:00-08:00") },
     { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Frank Castle", eventType: "New Hire Enrollment", effectiveDate: "2026-03-15", expectedPremium: "45.00", expectedMonth: "April 2026 Invoice", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee Only", processedAt: new Date("2026-02-06T11:00:00-08:00") },
@@ -97,7 +104,6 @@ async function seed() {
     { invoiceId: marchInv.id, worksite: "Remote - NY", memberName: "Frank Castle", eventType: "New Hire Enrollment", effectiveDate: "2026-03-15", expectedPremium: "18.50", expectedMonth: "April 2026 Invoice", carrier: "Guardian", lineOfCoverage: "Life/Disability", plan: "Guardian Life & AD&D", tier: "Employee Only", processedAt: new Date("2026-02-06T11:00:00-08:00") },
   ]);
 
-  // February & January rosters abbreviated for brevity - PEO seed handles full data
   console.log("Seed complete!");
   await pool.end();
 }

@@ -100,6 +100,10 @@ export default function InvoiceReconciliation() {
     effectiveDate: format(new Date(r.effectiveDate + "T00:00:00"), "MM/dd/yyyy"),
     amount: parseFloat(r.amount),
     reason: r.reasonCode,
+    carrier: r.carrier || undefined,
+    lineOfCoverage: r.lineOfCoverage || undefined,
+    plan: r.plan || undefined,
+    tier: r.tier || undefined,
     processedAt: formatTimestamp(r.processedAt),
   })) || [];
 

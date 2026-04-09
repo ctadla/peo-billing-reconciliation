@@ -45,6 +45,10 @@ export const retroAdjustments = pgTable("retro_adjustments", {
   effectiveDate: date("effective_date").notNull(),
   amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
   reasonCode: text("reason_code").notNull(),
+  carrier: text("carrier"),
+  lineOfCoverage: text("line_of_coverage"),
+  plan: text("plan"),
+  tier: text("tier"),
   processedAt: timestamp("processed_at").notNull(),
 });
 

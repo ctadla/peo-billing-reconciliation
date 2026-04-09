@@ -44,8 +44,8 @@ Preferred communication style: Simple, everyday language.
 - **Tables**:
   - `invoices` — coverage periods, timestamps, financial totals, batch/invoice IDs
   - `billed_roster_members` — members billed per invoice with plan, tier, premium splits, flags
-  - `retro_adjustments` — retroactive premium corrections linked to invoices
-  - `post_cutoff_changes` — enrollment changes after invoice cutoff date
+  - `retro_adjustments` — retroactive premium corrections linked to invoices, with carrier/LOC/plan/tier detail per line; event types: Cancelled Benefits, New Hire, Benefit Change
+  - `post_cutoff_changes` — enrollment changes after invoice cutoff date, with carrier/LOC/plan/tier detail per line
 - **Seeding**: `server/seed.ts` populates sample data for 3 months of invoices with roster members, retro adjustments, and post-cutoff changes
 
 ### Storage Layer
