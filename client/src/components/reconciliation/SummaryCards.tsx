@@ -6,9 +6,7 @@ interface SummaryProps {
   data: {
     coveragePeriod: string;
     invoiceDate: string;
-    cutoffDate: string;
     invoiceId: string;
-    batchId: string;
     totalRemitted: number;
     retroTotal: number;
     basePremium: number;
@@ -55,7 +53,7 @@ export function SummaryCards({ data }: SummaryProps) {
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Total Premium Remitted</p>
               <h3 className="text-2xl font-bold text-slate-800">{formatCurrency(data.totalRemitted)}</h3>
-              <p className="text-xs text-muted-foreground mt-1">Batch: {data.batchId}</p>
+              <p className="text-xs text-muted-foreground mt-1">&nbsp;</p>
             </div>
             <div className="bg-emerald-100 p-2 rounded-full text-emerald-700">
               <DollarSign className="h-5 w-5" />
@@ -89,10 +87,7 @@ export function SummaryCards({ data }: SummaryProps) {
               <h3 className={`text-xl font-bold ${data.retroTotal < 0 ? 'text-rose-600' : 'text-slate-800'}`}>
                 {formatCurrency(data.retroTotal)}
               </h3>
-               <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-                <Clock className="h-3 w-3" />
-                <span>Cutoff: {data.cutoffDate}</span>
-              </div>
+               <div className="mt-2">&nbsp;</div>
             </div>
             <div className="bg-amber-100 p-2 rounded-full text-amber-700">
               <AlertCircle className="h-5 w-5" />

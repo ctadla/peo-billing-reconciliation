@@ -65,9 +65,7 @@ export default function InvoiceReconciliation() {
     ? {
         coveragePeriod: `${format(new Date(invoiceDetail.invoice.coveragePeriodStart + "T00:00:00"), "M/d/yy")} – ${format(new Date(invoiceDetail.invoice.coveragePeriodEnd + "T00:00:00"), "M/d/yy")}`,
         invoiceDate: formatTimestamp(invoiceDetail.invoice.invoiceGeneratedAt),
-        cutoffDate: formatTimestamp(invoiceDetail.invoice.cutoffTimestamp),
         invoiceId: invoiceDetail.invoice.invoiceId,
-        batchId: invoiceDetail.invoice.batchId,
         totalRemitted: parseFloat(invoiceDetail.invoice.totalRemitted),
         retroTotal: parseFloat(invoiceDetail.invoice.retroTotal),
         basePremium: parseFloat(invoiceDetail.invoice.basePremiumTotal),

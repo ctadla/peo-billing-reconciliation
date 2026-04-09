@@ -351,9 +351,7 @@ function CompanyInvoiceView({
     ? {
         coveragePeriod: `${format(new Date(billingData.summary.periodStart + "T00:00:00"), "M/d/yy")} – ${format(new Date(billingData.summary.periodEnd + "T00:00:00"), "M/d/yy")}`,
         invoiceDate: billingData.invoices?.length === 1 && billingData.invoices[0]?.invoiceGeneratedAt ? formatTimestamp(billingData.invoices[0].invoiceGeneratedAt) : `${billingData.summary.invoiceCount} invoices`,
-        cutoffDate: billingData.invoices?.length === 1 && billingData.invoices[0]?.cutoffTimestamp ? formatTimestamp(billingData.invoices[0].cutoffTimestamp) : "N/A",
         invoiceId: billingData.invoices?.length === 1 ? billingData.invoices[0]?.invoiceId || "—" : `${billingData.summary.invoiceCount} invoices`,
-        batchId: billingData.invoices?.length === 1 ? billingData.invoices[0]?.batchId || "—" : "Multiple",
         totalRemitted: billingData.summary.totalRemitted,
         retroTotal: billingData.summary.retroTotal,
         basePremium: billingData.summary.basePremium,
