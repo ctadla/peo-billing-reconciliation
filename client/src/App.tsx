@@ -6,12 +6,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import InvoiceReconciliation from "@/pages/InvoiceReconciliation";
 import PeoBilling from "@/pages/PeoBilling";
+import BillReconciliation from "@/pages/BillReconciliation";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={InvoiceReconciliation} />
       <Route path="/peo-billing" component={PeoBilling} />
+      <Route path="/bill-reconciliation" component={BillReconciliation} />
       <Route component={NotFound} />
     </Switch>
   );
