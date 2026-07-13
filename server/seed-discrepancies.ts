@@ -1,6 +1,6 @@
 import pg from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import {
   invoices,
   billedRosterMembers,
@@ -8,8 +8,23 @@ import {
   discrepancies,
   expectedAdjustments,
   type BilledRosterMember,
+  type InsertCarrierBillLineItem,
 } from "@shared/schema";
 import { detectDiscrepancies } from "./discrepancy-engine";
+
+interface PremiumOverride {
+  memberName: string;
+  lineOfCoverage: string;
+  billedPremium: string;
+}
+
+interface UnmatchedLineItem {
+  memberName: string;
+  lineOfCoverage: string;
+  plan: string | null;
+  tier: string | null;
+  billedPremium: string;
+}
 
 async function seedDiscrepancies() {
   const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
@@ -22,56 +37,100 @@ async function seedDiscrepancies() {
     return;
   }
 
-  const [invoice] = await db.select().from(invoices).where(eq(invoices.invoiceId, "INV-2026-03-9921"));
-  if (!invoice) {
-    console.log("Seed invoice INV-2026-03-9921 not found - run server/seed.ts first.");
+  const marchInvoices = await db.select().from(invoices).where(eq(invoices.coveragePeriodStart, "2026-03-01"));
+  if (marchInvoices.length === 0) {
+    console.log("No March invoices found - run server/seed.ts and server/seed-peo.ts first.");
     await pool.end();
     return;
   }
 
-  const roster = await db.select().from(billedRosterMembers).where(eq(billedRosterMembers.invoiceId, invoice.id));
-  const byNameCoverage = (name: string, carrier: string, lineOfCoverage: string): BilledRosterMember | undefined =>
-    roster.find(r => r.memberName === name && r.carrier === carrier && r.lineOfCoverage === lineOfCoverage);
+  const invoiceIds = marchInvoices.map(i => i.id);
+  const roster = await db.select().from(billedRosterMembers).where(inArray(billedRosterMembers.invoiceId, invoiceIds));
 
-  console.log("Seeding a sample carrier bill with discrepancies...");
+  console.log("Seeding master March carrier bills for Guardian and Aetna across all customers...");
 
   const uploadedAt = new Date("2026-03-08T09:00:00-08:00");
-  const bill = [
-    { memberNameRaw: "Alice Johnson", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Kaiser Silver HMO", tier: "Employee Only", billedPremium: byNameCoverage("Alice Johnson", "Aetna", "Medical")!.monthlyPremium },
-    { memberNameRaw: "Bob Smith", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Kaiser Gold PPO", tier: "Family", billedPremium: "2000.00" },
-    { memberNameRaw: "Charlie Davis", carrier: "Guardian", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee + Spouse", billedPremium: "60.00" },
-    { memberNameRaw: "Diana Prince", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Kaiser Silver HMO", tier: "Employee Only", billedPremium: byNameCoverage("Diana Prince", "Aetna", "Medical")!.monthlyPremium },
-    { memberNameRaw: "Evan Wright", carrier: "Guardian", lineOfCoverage: "Vision", plan: "Guardian Vision", tier: "Employee + Children", billedPremium: "45.00" },
-    { memberNameRaw: "Henry Ford", carrier: "Aetna", lineOfCoverage: "Medical", plan: "Kaiser Silver HMO", tier: "Employee Only", billedPremium: "610.00" },
-  ];
+  const detectedAt = new Date("2026-03-08T09:05:00-08:00");
 
-  const savedItems = await db.insert(carrierBillLineItems).values(
-    bill.map(item => ({ ...item, invoiceId: invoice.id, uploadedAt }))
-  ).returning();
+  async function seedCarrierBill(carrier: string, overrides: PremiumOverride[], unmatchedRows: UnmatchedLineItem[]) {
+    const carrierRoster: BilledRosterMember[] = roster.filter(r => r.carrier === carrier);
 
-  const detected = detectDiscrepancies(roster, savedItems);
-  const now = new Date("2026-03-08T09:05:00-08:00");
+    const matchedItems: InsertCarrierBillLineItem[] = carrierRoster.map(r => {
+      const override = overrides.find(o => o.memberName === r.memberName && o.lineOfCoverage === r.lineOfCoverage);
+      return {
+        invoiceId: r.invoiceId,
+        memberNameRaw: r.memberName,
+        carrier,
+        lineOfCoverage: r.lineOfCoverage,
+        plan: r.plan,
+        tier: r.tier,
+        billedPremium: override ? override.billedPremium : r.monthlyPremium,
+        uploadedAt,
+      };
+    });
 
-  const savedDiscrepancies = await db.insert(discrepancies).values(
-    detected.map(d => ({
-      invoiceId: invoice.id,
-      billLineItemId: d.billLineItemId,
-      rosterMemberId: d.rosterMemberId,
-      memberName: d.memberName,
-      carrier: d.carrier,
-      lineOfCoverage: d.lineOfCoverage,
-      discrepancyType: d.discrepancyType,
-      expectedPremium: d.expectedPremium,
-      billedPremium: d.billedPremium,
-      deltaAmount: d.deltaAmount,
-      status: "open",
-      detectedAt: now,
-    }))
-  ).returning();
+    const unmatchedItems: InsertCarrierBillLineItem[] = unmatchedRows.map(u => ({
+      invoiceId: null,
+      memberNameRaw: u.memberName,
+      carrier,
+      lineOfCoverage: u.lineOfCoverage,
+      plan: u.plan,
+      tier: u.tier,
+      billedPremium: u.billedPremium,
+      uploadedAt,
+    }));
 
-  const bobDiscrepancy = savedDiscrepancies.find(d => d.memberName === "Bob Smith");
-  const charlieDiscrepancy = savedDiscrepancies.find(d => d.memberName === "Charlie Davis");
+    const saved = await db.insert(carrierBillLineItems).values([...matchedItems, ...unmatchedItems]).returning();
+    const invoiceIdByLineItem = new Map(saved.map(s => [s.id, s.invoiceId]));
 
+    const detected = detectDiscrepancies(carrierRoster, saved);
+
+    const savedDiscrepancies = await db.insert(discrepancies).values(
+      detected.map(d => ({
+        invoiceId: invoiceIdByLineItem.get(d.billLineItemId) ?? null,
+        billLineItemId: d.billLineItemId,
+        rosterMemberId: d.rosterMemberId,
+        memberName: d.memberName,
+        carrier: d.carrier,
+        lineOfCoverage: d.lineOfCoverage,
+        discrepancyType: d.discrepancyType,
+        expectedPremium: d.expectedPremium,
+        billedPremium: d.billedPremium,
+        deltaAmount: d.deltaAmount,
+        status: "open",
+        detectedAt,
+      }))
+    ).returning();
+
+    return { billLineItems: saved, discrepancies: savedDiscrepancies };
+  }
+
+  const aetnaBill = await seedCarrierBill(
+    "Aetna",
+    [
+      { memberName: "Bob Smith", lineOfCoverage: "Medical", billedPremium: "2000.00" },
+      { memberName: "Maria Garcia", lineOfCoverage: "Medical", billedPremium: "1900.00" },
+      { memberName: "Derek Tanaka", lineOfCoverage: "Medical", billedPremium: "1000.00" },
+    ],
+    [
+      { memberName: "Henry Ford", lineOfCoverage: "Medical", plan: "Kaiser Silver HMO", tier: "Employee Only", billedPremium: "610.00" },
+    ]
+  );
+
+  const guardianBill = await seedCarrierBill(
+    "Guardian",
+    [
+      { memberName: "Charlie Davis", lineOfCoverage: "Dental", billedPremium: "60.00" },
+      { memberName: "Evan Wright", lineOfCoverage: "Vision", billedPremium: "45.00" },
+      { memberName: "James Wilson", lineOfCoverage: "Dental", billedPremium: "60.00" },
+      { memberName: "Nina Reeves", lineOfCoverage: "Vision", billedPremium: "40.00" },
+    ],
+    [
+      { memberName: "Grace Hopper", lineOfCoverage: "Dental", plan: "Guardian Dental PPO", tier: "Employee Only", billedPremium: "60.00" },
+    ]
+  );
+
+  const bobDiscrepancy = aetnaBill.discrepancies.find(d => d.memberName === "Bob Smith");
   if (bobDiscrepancy) {
     await db.update(discrepancies).set({
       status: "resolved_carrier_error",
@@ -82,7 +141,7 @@ async function seedDiscrepancies() {
 
     await db.insert(expectedAdjustments).values({
       discrepancyId: bobDiscrepancy.id,
-      invoiceId: invoice.id,
+      invoiceId: bobDiscrepancy.invoiceId,
       memberName: "Bob Smith",
       carrier: "Aetna",
       lineOfCoverage: "Medical",
@@ -93,6 +152,7 @@ async function seedDiscrepancies() {
     });
   }
 
+  const charlieDiscrepancy = guardianBill.discrepancies.find(d => d.memberName === "Charlie Davis");
   if (charlieDiscrepancy) {
     await db.update(discrepancies).set({
       status: "resolved_gusto_error",
@@ -102,7 +162,8 @@ async function seedDiscrepancies() {
     }).where(eq(discrepancies.id, charlieDiscrepancy.id));
   }
 
-  console.log(`Seeded ${savedItems.length} bill line items and ${savedDiscrepancies.length} discrepancies for ${invoice.invoiceId}.`);
+  console.log(`Seeded Aetna bill: ${aetnaBill.billLineItems.length} line items, ${aetnaBill.discrepancies.length} discrepancies.`);
+  console.log(`Seeded Guardian bill: ${guardianBill.billLineItems.length} line items, ${guardianBill.discrepancies.length} discrepancies.`);
   await pool.end();
 }
 

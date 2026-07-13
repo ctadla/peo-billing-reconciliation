@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,8 +10,8 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 const formatCurrency = (val: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(val);
@@ -29,20 +29,34 @@ export interface ResolvableDiscrepancy {
 interface ResolveDiscrepancyDialogProps {
   discrepancy: ResolvableDiscrepancy | null;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (params: { faultParty: "gusto" | "carrier"; resolutionNotes: string }) => void;
+  onSubmit: (params: { faultParty: "gusto" | "carrier"; resolutionNotes: string; amount?: string }) => void;
   isSubmitting: boolean;
 }
 
 export function ResolveDiscrepancyDialog({ discrepancy, onOpenChange, onSubmit, isSubmitting }: ResolveDiscrepancyDialogProps) {
   const [faultParty, setFaultParty] = useState<"gusto" | "carrier">("gusto");
   const [notes, setNotes] = useState("");
+  const [amount, setAmount] = useState("");
+
+  const expected = discrepancy?.expectedPremium ? parseFloat(discrepancy.expectedPremium) : 0;
+  const billed = discrepancy ? parseFloat(discrepancy.billedPremium) : 0;
+  const delta = billed - expected;
+  const direction = delta > 0 ? "credit_owed_to_us" : "debit_owed_to_carrier";
+
+  useEffect(() => {
+    if (discrepancy) {
+      setAmount(Math.abs(delta).toFixed(2));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [discrepancy?.id]);
 
   if (!discrepancy) return null;
 
-  const expected = discrepancy.expectedPremium ? parseFloat(discrepancy.expectedPremium) : 0;
-  const billed = parseFloat(discrepancy.billedPremium);
-  const delta = billed - expected;
-  const direction = delta > 0 ? "credit_owed_to_us" : "debit_owed_to_carrier";
+  const parsedAmount = parseFloat(amount);
+  const isValidAmount = !isNaN(parsedAmount) && parsedAmount >= 0;
+  const directionText = direction === "credit_owed_to_us"
+    ? `${discrepancy.carrier} owes Gusto ${isValidAmount ? formatCurrency(parsedAmount) : "—"} on a future bill.`
+    : `Gusto owes ${discrepancy.carrier} ${isValidAmount ? formatCurrency(parsedAmount) : "—"} on a future bill.`;
 
   const handleClose = (next: boolean) => {
     if (!next) {
@@ -85,12 +99,23 @@ export function ResolveDiscrepancyDialog({ discrepancy, onOpenChange, onSubmit, 
           </RadioGroup>
 
           {faultParty === "carrier" && (
-            <div className="rounded-md bg-amber-50 border border-amber-200 px-3 py-2 text-sm text-amber-900" data-testid="text-adjustment-preview">
-              Expected adjustment: <span className="font-semibold">{formatCurrency(Math.abs(delta))}</span>{" "}
-              <Badge variant="outline" className="ml-1 bg-white">
-                {direction === "credit_owed_to_us" ? "credit owed to us" : "debit owed to carrier"}
-              </Badge>{" "}
-              on a future bill.
+            <div className="space-y-2 rounded-md bg-amber-50 border border-amber-200 px-3 py-2.5" data-testid="text-adjustment-preview">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="adjustment-amount-input" className="text-sm text-amber-900 font-medium whitespace-nowrap">
+                  Expected adjustment
+                </Label>
+                <Input
+                  id="adjustment-amount-input"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="h-8 w-32 bg-white"
+                  data-testid="input-adjustment-amount-inline"
+                />
+              </div>
+              <p className="text-sm text-amber-900">{directionText}</p>
             </div>
           )}
 
@@ -112,8 +137,8 @@ export function ResolveDiscrepancyDialog({ discrepancy, onOpenChange, onSubmit, 
           </Button>
           <Button
             className="bg-[#0a8080] hover:bg-[#086a6a]"
-            disabled={isSubmitting}
-            onClick={() => onSubmit({ faultParty, resolutionNotes: notes })}
+            disabled={isSubmitting || (faultParty === "carrier" && !isValidAmount)}
+            onClick={() => onSubmit({ faultParty, resolutionNotes: notes, amount: faultParty === "carrier" ? amount : undefined })}
             data-testid="button-submit-resolve"
           >
             {isSubmitting ? "Saving..." : "Mark Resolved"}

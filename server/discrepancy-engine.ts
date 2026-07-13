@@ -1,6 +1,6 @@
 import type { BilledRosterMember, CarrierBillLineItem } from "@shared/schema";
 
-function normalizeName(name: string): string {
+export function normalizeName(name: string): string {
   return name.trim().toLowerCase().replace(/\s+/g, " ");
 }
 

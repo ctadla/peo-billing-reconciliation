@@ -33,7 +33,9 @@ function formatTimestamp(ts: string) {
 export default function InvoiceReconciliation() {
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string>("");
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string>(
+    () => new URLSearchParams(window.location.search).get("invoiceId") || ""
+  );
 
   const { data: invoiceList, isLoading: listLoading } = useQuery({
     queryKey: ["/api/invoices"],

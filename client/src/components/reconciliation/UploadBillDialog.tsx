@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -7,10 +8,19 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Upload, FileText, Sparkles } from "lucide-react";
+import { format } from "date-fns";
 
-interface ParsedLineItem {
+export interface ParsedLineItem {
   memberName: string;
   carrier: string;
   lineOfCoverage: string;
@@ -19,7 +29,7 @@ interface ParsedLineItem {
   billedPremium: string;
 }
 
-interface RosterMemberLike {
+export interface RosterMemberLike {
   memberName: string;
   carrier: string;
   lineOfCoverage: string;
@@ -31,8 +41,11 @@ interface RosterMemberLike {
 interface UploadBillDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  roster: RosterMemberLike[];
-  onSubmit: (lineItems: ParsedLineItem[]) => void;
+  carriers: string[];
+  periods: { start: string; end: string }[];
+  defaultCarrier: string;
+  defaultPeriod: string;
+  onSubmit: (params: { carrier: string; period: string; lineItems: ParsedLineItem[] }) => void;
   isSubmitting: boolean;
 }
 
@@ -63,7 +76,7 @@ function parseCsv(text: string): ParsedLineItem[] {
   });
 }
 
-function buildSampleBill(roster: RosterMemberLike[]): ParsedLineItem[] {
+export function buildSampleBill(roster: RosterMemberLike[]): ParsedLineItem[] {
   const items: ParsedLineItem[] = roster.map((m) => ({
     memberName: m.memberName,
     carrier: m.carrier,
@@ -92,11 +105,28 @@ function buildSampleBill(roster: RosterMemberLike[]): ParsedLineItem[] {
   return items;
 }
 
-export function UploadBillDialog({ open, onOpenChange, roster, onSubmit, isSubmitting }: UploadBillDialogProps) {
+export function UploadBillDialog({ open, onOpenChange, carriers, periods, defaultCarrier, defaultPeriod, onSubmit, isSubmitting }: UploadBillDialogProps) {
+  const [carrier, setCarrier] = useState(defaultCarrier);
+  const [period, setPeriod] = useState(defaultPeriod);
   const [fileName, setFileName] = useState<string | null>(null);
   const [parsedItems, setParsedItems] = useState<ParsedLineItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open) {
+      setCarrier(defaultCarrier);
+      setPeriod(defaultPeriod);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  const { data: report } = useQuery<{ roster: RosterMemberLike[] }>({
+    queryKey: ["/api/discrepancies", carrier, period],
+    queryFn: async () => (await fetch(`/api/discrepancies?carrier=${encodeURIComponent(carrier)}&period=${encodeURIComponent(period)}`)).json(),
+    enabled: open && !!carrier && !!period,
+  });
+  const roster = report?.roster || [];
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -136,12 +166,42 @@ export function UploadBillDialog({ open, onOpenChange, roster, onSubmit, isSubmi
         <DialogHeader>
           <DialogTitle>Upload Carrier Bill</DialogTitle>
           <DialogDescription>
-            Upload a carrier bill CSV to check it against Active Benefits. We'll flag any member whose billed
-            premium doesn't tie out.
+            Confirm which carrier and coverage month this bill is for, then upload a CSV to check it against Active Benefits.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="upload-carrier">Carrier</Label>
+              <Select value={carrier} onValueChange={setCarrier}>
+                <SelectTrigger id="upload-carrier" data-testid="select-upload-carrier">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {carriers.map((c) => (
+                    <SelectItem key={c} value={c} data-testid={`upload-carrier-option-${c}`}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="upload-period">Coverage Month</Label>
+              <Select value={period} onValueChange={setPeriod}>
+                <SelectTrigger id="upload-period" data-testid="select-upload-period">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {periods.slice().reverse().map((p) => (
+                    <SelectItem key={p.start} value={p.start} data-testid={`upload-period-option-${p.start}`}>
+                      {format(new Date(p.start + "T00:00:00"), "MMMM yyyy")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           <div
             className="flex flex-col items-center justify-center gap-2 rounded-md border border-dashed border-slate-300 bg-slate-50 px-6 py-8 text-center cursor-pointer hover:bg-slate-100 transition-colors"
             onClick={() => fileInputRef.current?.click()}
@@ -198,7 +258,7 @@ export function UploadBillDialog({ open, onOpenChange, roster, onSubmit, isSubmi
           <Button
             className="bg-[#0a8080] hover:bg-[#086a6a]"
             disabled={parsedItems.length === 0 || isSubmitting}
-            onClick={() => onSubmit(parsedItems)}
+            onClick={() => onSubmit({ carrier, period, lineItems: parsedItems })}
             data-testid="button-submit-upload"
           >
             {isSubmitting ? "Checking..." : "Upload & Check for Discrepancies"}

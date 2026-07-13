@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import InvoiceReconciliation from "@/pages/InvoiceReconciliation";
 import PeoBilling from "@/pages/PeoBilling";
 import BillReconciliation from "@/pages/BillReconciliation";
+import ExpectedAdjustments from "@/pages/ExpectedAdjustments";
 
 function Router() {
   return (
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={InvoiceReconciliation} />
       <Route path="/peo-billing" component={PeoBilling} />
       <Route path="/bill-reconciliation" component={BillReconciliation} />
+      <Route path="/expected-adjustments" component={ExpectedAdjustments} />
       <Route component={NotFound} />
     </Switch>
   );

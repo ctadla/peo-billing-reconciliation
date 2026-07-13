@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 interface HeaderProps {
-  activePage?: "company" | "peo-billing" | "bill-reconciliation";
+  activePage?: "company" | "peo-billing" | "bill-reconciliation" | "expected-adjustments";
 }
 
 export function Header({ activePage = "company" }: HeaderProps) {
@@ -65,6 +65,18 @@ export function Header({ activePage = "company" }: HeaderProps) {
                   >
                     <Building2 className="h-4 w-4 text-[#0a8080]" />
                     Bill Reconciliation
+                  </button>
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      navigate("/expected-adjustments");
+                      setReportsOpen(false);
+                    }}
+                    data-testid="nav-expected-adjustments"
+                  >
+                    <Building2 className="h-4 w-4 text-[#0a8080]" />
+                    Expected Adjustments
                   </button>
                 </div>
               )}

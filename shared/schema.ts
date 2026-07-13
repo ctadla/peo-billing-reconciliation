@@ -15,8 +15,6 @@ export const invoices = pgTable("invoices", {
   retroTotal: numeric("retro_total", { precision: 12, scale: 2 }).notNull(),
   basePremiumTotal: numeric("base_premium_total", { precision: 12, scale: 2 }).notNull(),
   companyName: text("company_name").notNull().default("Matt Morgan Design Inc."),
-  payoutStatus: text("payout_status").notNull().default("pending"),
-  paidAt: timestamp("paid_at"),
 });
 
 export const billedRosterMembers = pgTable("billed_roster_members", {
@@ -72,7 +70,7 @@ export const postCutoffChanges = pgTable("post_cutoff_changes", {
 
 export const carrierBillLineItems = pgTable("carrier_bill_line_items", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  invoiceId: integer("invoice_id").notNull(),
+  invoiceId: integer("invoice_id"), // null when the member on the bill can't be matched to any customer's roster
   memberNameRaw: text("member_name_raw").notNull(),
   carrier: text("carrier").notNull(),
   lineOfCoverage: text("line_of_coverage").notNull(),
@@ -84,7 +82,7 @@ export const carrierBillLineItems = pgTable("carrier_bill_line_items", {
 
 export const discrepancies = pgTable("discrepancies", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  invoiceId: integer("invoice_id").notNull(),
+  invoiceId: integer("invoice_id"), // null when the member on the bill can't be matched to any customer's roster
   billLineItemId: integer("bill_line_item_id").notNull(),
   rosterMemberId: integer("roster_member_id"),
   memberName: text("member_name").notNull(),
@@ -104,7 +102,7 @@ export const discrepancies = pgTable("discrepancies", {
 export const expectedAdjustments = pgTable("expected_adjustments", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   discrepancyId: integer("discrepancy_id").notNull(),
-  invoiceId: integer("invoice_id").notNull(),
+  invoiceId: integer("invoice_id"), // null when the member on the bill can't be matched to any customer's roster
   memberName: text("member_name").notNull(),
   carrier: text("carrier").notNull(),
   lineOfCoverage: text("line_of_coverage").notNull(),
@@ -114,6 +112,14 @@ export const expectedAdjustments = pgTable("expected_adjustments", {
   createdAt: timestamp("created_at").notNull(),
 });
 
+export const carrierBillPayouts = pgTable("carrier_bill_payouts", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  carrier: text("carrier").notNull(),
+  periodStart: date("period_start").notNull(),
+  paidAt: timestamp("paid_at").notNull(),
+  receiptFileName: text("receipt_file_name").notNull(),
+});
+
 export const insertInvoiceSchema = createInsertSchema(invoices).omit({ id: true });
 export const insertBilledRosterSchema = createInsertSchema(billedRosterMembers).omit({ id: true });
 export const insertRetroAdjustmentSchema = createInsertSchema(retroAdjustments).omit({ id: true });
@@ -121,6 +127,7 @@ export const insertPostCutoffSchema = createInsertSchema(postCutoffChanges).omit
 export const insertCarrierBillLineItemSchema = createInsertSchema(carrierBillLineItems).omit({ id: true });
 export const insertDiscrepancySchema = createInsertSchema(discrepancies).omit({ id: true });
 export const insertExpectedAdjustmentSchema = createInsertSchema(expectedAdjustments).omit({ id: true });
+export const insertCarrierBillPayoutSchema = createInsertSchema(carrierBillPayouts).omit({ id: true });
 
 export type InsertInvoice = z.infer<typeof insertInvoiceSchema>;
 export type Invoice = typeof invoices.$inferSelect;
@@ -142,3 +149,6 @@ export type Discrepancy = typeof discrepancies.$inferSelect;
 
 export type InsertExpectedAdjustment = z.infer<typeof insertExpectedAdjustmentSchema>;
 export type ExpectedAdjustment = typeof expectedAdjustments.$inferSelect;
+
+export type InsertCarrierBillPayout = z.infer<typeof insertCarrierBillPayoutSchema>;
+export type CarrierBillPayout = typeof carrierBillPayouts.$inferSelect;
