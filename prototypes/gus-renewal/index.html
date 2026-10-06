@@ -122,6 +122,7 @@
   .chip { margin: 0 0 8px; }
   .chip button { font: inherit; font-size: 13px; background: #f4ede4; border: 1px dashed #c9a66b; color: #6b4a14; border-radius: 14px; padding: 3px 12px; cursor: pointer; }
   .chip button:hover { background: #efe3d1; }
+  .btn.mini { padding: 1px 9px; font-size: 12px; }
   .reset { position: fixed; right: 14px; top: 12px; font-size: 12px; color: var(--muted); background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: 3px 8px; cursor: pointer; z-index: 5; }
 </style>
 </head>
@@ -173,7 +174,7 @@ const $ = (n) => "$" + n.toLocaleString();
 
 /* ---------- State ---------- */
 let S;
-function fresh() { return { view: "dm", dm: [], group: null, step: 0, chosen: null }; }
+function fresh() { return { view: "dm", dm: [], group: null, step: 0, chosen: null, udm: {}, nudged: {} }; }
 S = fresh();
 
 const el = (id) => document.getElementById(id);
@@ -189,17 +190,20 @@ function sidebar() {
     <div class="sec">Direct messages</div>
     <div class="item ${S.view === "dm" ? "active" : ""}" data-v="dm"><span class="dot"></span>Gus${S.unread ? `<span class="badge">${S.unread}</span>` : ""}</div>
     ${S.group ? `<div class="item new ${S.view === "group" ? "active" : ""}" data-v="group"><span class="dot off"></span>Gus, ${S.group.names.slice(0,2).map(n=>n.split(" ")[0]).join(", ")} +${S.group.names.length-2}</div>` : ""}
+    ${Object.keys(S.udm).map((n) => `<div class="item new ${S.view === "u:" + n ? "active" : ""}" data-v="u:${n}"><span class="dot off"></span>${n}${S.udm[n].unread ? `<span class="badge">${S.udm[n].unread}</span>` : ""}</div>`).join("")}
     <div class="item"><span class="dot off"></span>Tom Rivera</div>
     <div class="item"><span class="dot off"></span>Priya Sharma</div>`;
-  document.querySelectorAll(".item[data-v]").forEach((n) => n.onclick = () => { S.view = n.dataset.v; S.unread = 0; renderAll(); });
+  document.querySelectorAll(".item[data-v]").forEach((n) => n.onclick = () => { S.view = n.dataset.v; S.unread = 0; if (S.view.startsWith("u:")) S.udm[S.view.slice(2)].unread = 0; renderAll(); });
 }
 function header() {
   el("header").innerHTML = S.view.startsWith("ch:") ? `# ${S.view.slice(3)}`
+    : S.view.startsWith("u:") ? `${S.view.slice(2)} <span class="sub">· ZEROEX teammate</span>`
     : S.view === "dm"
     ? `Gus <span style="color:#3fb27f">●</span>`
     : `${S.group.names.length + 2} people <span class="sub">· Gus, ${ADMIN.first}, ${S.group.names.length} teammates</span>`;
 }
 function msgHtml(m, i) {
+  if (m.render) m = { ...m, html: m.render() };
   if (m.sys) return `<div class="sys">${m.sys}</div>`;
   const av = m.from === "gus" ? `<div class="av gus">G</div>` : m.from === "me" ? `<div class="av me">${ADMIN.initials}</div>` : `<div class="av ${m.c || "sc"}">${m.init || "?"}</div>`;
   const nm = m.from === "gus" ? "Gus" : m.from === "me" ? ADMIN.full : m.name;
@@ -233,7 +237,7 @@ function channelMsgs(ch) {
 }
 function renderAll() {
   sidebar(); header();
-  const list = S.view.startsWith("ch:") ? channelMsgs(S.view.slice(3)) : S.view === "dm" ? S.dm : S.group.msgs;
+  const list = S.view.startsWith("ch:") ? channelMsgs(S.view.slice(3)) : S.view.startsWith("u:") ? S.udm[S.view.slice(2)].msgs : S.view === "dm" ? S.dm : S.group.msgs;
   inner.innerHTML = list.map(msgHtml).join("");
   list.forEach((m, i) => { if (m.done) inner.querySelectorAll(`.msg[data-i="${i}"] button`).forEach((b) => (b.disabled = true)); });
   wire();
@@ -315,16 +319,17 @@ const statusMsg = () => {
   </ul>
   <div class="bar"><i style="width:${c.length * 10}%;background:var(--green)"></i><i style="width:${p.length * 10}%;background:var(--amber)"></i><i style="width:${n.length * 10}%;background:#d9645a"></i></div>
   <div class="legend"><span style="--c:var(--green)">${c.length} completed</span><span style="--c:var(--amber)">${p.length} in progress</span><span style="--c:#d9645a">${n.length} not started</span></div>
-  <table class="emp"><tr><th>Employee</th><th>Status</th></tr>
-    ${[...n, ...p, ...c].map((e) => `<tr><td>${e.name}</td><td>${pill[e.s]}</td></tr>`).join("")}
+  <table class="emp"><tr><th>Employee</th><th>Status</th><th></th></tr>
+    ${[...n, ...p, ...c].map((e) => `<tr><td>${e.name}</td><td>${pill[e.s]}</td><td style="text-align:right">${e.s === "done" ? "" : S.nudged[e.name] ? `<span class="pill done">Nudged ✓</span>` : `<button class="btn mini" data-act="nudge1:${e.name}">Nudge</button>`}</td></tr>`).join("")}
   </table>
-  <p>${p.length + n.length} people still need to finish. Do you want me to nudge them to complete OE?</p>
-  <div class="btns"><button class="btn primary" data-act="nudge">Yes, nudge them</button><button class="btn" data-act="nonudge">Not yet</button></div>`;
+  <p>${p.length + n.length} people still need to finish. Do you want me to nudge them to complete OE? You can nudge everyone at once, or use the <b>Nudge</b> buttons above to pick individuals.</p>
+  <div class="btns"><button class="btn primary" data-act="nudge">Yes, nudge everyone</button><button class="btn" data-act="nonudge">Not yet</button></div>`;
 };
 
 /* ---------- Actions ---------- */
 async function act(a, btn) {
   S.unread = 0;
+  if (a.startsWith("nudge1:")) return nudgeOne(a.slice(7));
   const mi = btn.closest(".msg").dataset.i;
   if (S.view === "dm") S.dm[mi].done = true;
   btn.parentElement.querySelectorAll("button").forEach((b) => (b.disabled = true));
@@ -346,10 +351,12 @@ async function act(a, btn) {
     push(S.dm, { from: "me", t: now(), html: `<p>Talk to an advisor first</p>` });
     await gus(`<p>Of course — I've flagged a benefits advisor, who'll reach out within one business day. Come back when you're ready to confirm.</p>`, now());
   } else if (a === "nudge") {
-    push(S.dm, { from: "me", t: now(), html: `<p>Yes, nudge them</p>` });
-    await gus(`<p>On it. I'm opening a group chat with the ${STAFF.filter((e) => e.s !== "done").length} people who haven't finished, and I'll send a friendly reminder from you. 👇</p>`, now());
+    push(S.dm, { from: "me", t: now(), html: `<p>Yes, nudge everyone</p>` });
+    const todo = STAFF.filter((e) => e.s !== "done" && !S.nudged[e.name]);
+    if (!todo.length) { await gus(`<p>Everyone who's behind has already been nudged. 🙌 I'll let you know when they finish.</p>`, now()); return; }
+    todo.forEach((e) => (S.nudged[e.name] = true));
+    await gus(`<p>On it. I'm opening a group chat with the ${todo.length} ${todo.length === STAFF.filter((e) => e.s !== "done").length ? "people who haven't finished" : "remaining people"}, and I'll send a friendly reminder from you. 👇</p>`, now());
     await sleep(400);
-    const todo = STAFF.filter((e) => e.s !== "done");
     S.group = { names: todo.map((e) => e.name), msgs: [] };
     S.unread = 0;
     S.group.msgs.push({ sys: `Gus created this group and added ${ADMIN.first} and ${todo.length} teammates` });
@@ -368,13 +375,36 @@ async function act(a, btn) {
 }
 const now = () => { const d = new Date(); return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); };
 
+async function nudgeOne(name) {
+  if (S.nudged[name]) return;
+  const e = STAFF.find((x) => x.name === name);
+  S.nudged[name] = true;
+  const first = name.split(" ")[0];
+  const init = name.split(" ").map((x) => x[0]).join("");
+  S.udm[name] = { unread: 0, msgs: [
+    { sys: `Gus sent this on your behalf` },
+    { from: "me", t: now(), html: `<p>Hi ${first} — quick reminder that open enrollment closes <b>${OE.end}</b>. It takes about 10 minutes in Gusto. Let me know if you have questions! — ${ADMIN.first}</p><div class="btns"><button class="btn primary" disabled>Complete enrollment in Gusto</button></div>` },
+  ] };
+  renderAll();
+  await gus(`<p>✅ Nudged <b>${name}</b> — you can see it in your DM with ${first}.</p>`, now(), 500);
+  await sleep(1400);
+  const reply = e.s === "prog" ? `Thanks — I'm halfway through, finishing today 👍` : `Ugh, totally forgot. On it right now 🙏`;
+  S.udm[name].msgs.push({ from: "emp", name, init, c: e.c, t: now(), html: `<p>${reply}</p>` });
+  if (S.view !== "u:" + name) S.udm[name].unread = 1;
+  renderAll();
+}
+
 /* ---------- Free-text (second interaction) ---------- */
 async function userSays(text) {
   if (S.view !== "dm") return;
   push(S.dm, { from: "me", t: now(), html: `<p>${text.replace(/</g, "&lt;")}</p>` });
-  if (/renewal|where|status|enroll|oe\b/i.test(text)) {
+  // After plans are confirmed, any message is treated as "where am I at?"
+  if (S.chosen || /renewal|where|status|enroll|oe\b|busy|catch/i.test(text)) {
     if (!S.chosen) { S.chosen = "bcbs"; }
-    await gus(statusMsg(), now(), 1000);
+    const idx = S.dm.length;
+    await gus("", now(), 1000);
+    S.dm[S.dm.length - 1].render = statusMsg;
+    renderAll();
   } else {
     await gus(`<p>I can help with your benefits renewal — try asking where you're at with it.</p>`, now());
   }
