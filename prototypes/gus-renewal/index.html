@@ -152,7 +152,10 @@ const adminFirst = Q.get("admin") || "Jessica";
 const adminFull = Q.get("full") || (Q.get("admin") ? adminFirst : "Jessica Jackson");
 const ADMIN = { first: adminFirst, full: adminFull, initials: adminFull.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase() };
 const COMPANY = Q.get("company") || "Lone Star Systems";
+const SLUG = COMPANY.toLowerCase().replace(/\b(inc|llc|ltd|corp)\b\.?/g, "").trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const CHANNELS = ["announcements", "team-updates", "number-go-up", `pets-of-${SLUG}`];
 const EMPLOYEES = 10;
+const CONFIRM_BY = "9/30";
 const CURRENT_MO = 4600;                       // current UHC monthly premium
 const RENEWAL_MO = Math.round(CURRENT_MO * 1.28);   // +28%
 const ALT_MO = Math.round(RENEWAL_MO * 0.85);       // advisor package, 15% below renewal
@@ -182,7 +185,7 @@ function sidebar() {
   el("sidebar").innerHTML = `
     <div class="ws"><b>${COMPANY}</b><span>${ADMIN.full}</span></div>
     <div class="sec">Channels</div>
-    <div class="item"># general</div><div class="item"># team-updates</div><div class="item"># random</div>
+    ${CHANNELS.map((c) => `<div class="item ${S.view === "ch:" + c ? "active" : ""}" data-v="ch:${c}"># ${c}</div>`).join("")}
     <div class="sec">Direct messages</div>
     <div class="item ${S.view === "dm" ? "active" : ""}" data-v="dm"><span class="dot"></span>Gus${S.unread ? `<span class="badge">${S.unread}</span>` : ""}</div>
     ${S.group ? `<div class="item new ${S.view === "group" ? "active" : ""}" data-v="group"><span class="dot off"></span>Gus, ${S.group.names.slice(0,2).map(n=>n.split(" ")[0]).join(", ")} +${S.group.names.length-2}</div>` : ""}
@@ -191,7 +194,8 @@ function sidebar() {
   document.querySelectorAll(".item[data-v]").forEach((n) => n.onclick = () => { S.view = n.dataset.v; S.unread = 0; renderAll(); });
 }
 function header() {
-  el("header").innerHTML = S.view === "dm"
+  el("header").innerHTML = S.view.startsWith("ch:") ? `# ${S.view.slice(3)}`
+    : S.view === "dm"
     ? `Gus <span style="color:#3fb27f">●</span>`
     : `${S.group.names.length + 2} people <span class="sub">· Gus, ${ADMIN.first}, ${S.group.names.length} teammates</span>`;
 }
@@ -201,9 +205,35 @@ function msgHtml(m, i) {
   const nm = m.from === "gus" ? "Gus" : m.from === "me" ? ADMIN.full : m.name;
   return `<div class="msg" data-i="${i}"><div>${av}</div><div class="body"><div class="who">${nm}<small>${m.t || ""}</small></div>${m.html}</div></div>`;
 }
+const P = (name, init, c, t, text) => ({ from: "emp", name, init, c, t, html: `<p>${text}</p>` });
+function channelMsgs(ch) {
+  const pet = `pets-of-${SLUG}`;
+  const M = {
+    "announcements": [
+      P("Tom Rivera", "TR", "e3", "9:02 AM", "📣 Reminder: the office wifi password is <b>not</b> a seed phrase. Please stop writing it on the whiteboard."),
+      P("Priya Sharma", "PS", "e2", "9:40 AM", "Quarterly all-hands is Thursday. Agenda: roadmap, benefits open enrollment (10/1–10/15), and why the snack budget is denominated in ETH."),
+    ],
+    "team-updates": [
+      P("Alex Nguyen", "AN", "e4", "Mon", "Shipped the API rate-limit fix. Latency is down 40%. Nobody tell the on-call pager, it's been quiet and I'm scared."),
+      P("Maria Lopez", "ML", "e5", "Tue", "PSA: \"it works on my testnet\" is not a release criterion."),
+    ],
+    "number-go-up": [
+      P("Marcus Reed", "MR", "e5", "8:12 AM", "gm 🌅"),
+      P("Chris Bell", "CB", "e3", "8:13 AM", "gm. chart is green. I will be insufferable until further notice."),
+      P("Leah Park", "LP", "e4", "8:20 AM", "Reminder that none of this is financial advice, and also that my cat is now a validator."),
+      P("Marcus Reed", "MR", "e5", "8:21 AM", "ngmi if you check the price more than 3 times before lunch. I'm at 11. See you all at the top 🚀"),
+    ],
+  };
+  M[pet] = [
+    P("Sam Okafor", "SO", "e1", "12:30 PM", "Meet <b>Satoshi</b>, my golden retriever. He has never once sold the dip (he can't reach the keyboard). 🐕"),
+    P("Dana Whitfield", "DW", "e2", "12:34 PM", "Our rescue cat <b>Vitalik</b> has been sitting on my laptop for 3 hours. Technically that's proof of work."),
+    P("Jordan Mills", "JM", "e1", "12:41 PM", "Update: Satoshi ate a hardware wallet. Recovery is, uh, ongoing. Please stand by. 🙏"),
+  ];
+  return M[ch] || [];
+}
 function renderAll() {
   sidebar(); header();
-  const list = S.view === "dm" ? S.dm : S.group.msgs;
+  const list = S.view.startsWith("ch:") ? channelMsgs(S.view.slice(3)) : S.view === "dm" ? S.dm : S.group.msgs;
   inner.innerHTML = list.map(msgHtml).join("");
   list.forEach((m, i) => { if (m.done) inner.querySelectorAll(`.msg[data-i="${i}"] button`).forEach((b) => (b.disabled = true)); });
   wire();
@@ -243,8 +273,9 @@ const planCards = (sel) => `
   </div>`;
 
 const openingMsg = () => `
-  <p>Hey ${ADMIN.first} 👋 Your ${COMPANY} health plans renew on <b>${OE.effective}/27</b>, and I've already looked at your renewal rates. There's one thing you'll want to see before you confirm.</p>
-  <p>Mind if I walk you through it?</p>
+  <p>Hey ${ADMIN.first} 👋 Yes, one thing: your <b>health plan renewal notice</b> just came in.</p>
+  <div class="callout amber"><b>📋 Health plans renew ${OE.effective}/27</b><br>Your carrier (UHC) is renewing ${COMPANY}'s plans with a <b>28% rate increase</b>. Plans need to be confirmed by <b>${CONFIRM_BY}</b> so open enrollment can start on ${OE.start}.</div>
+  <p>I also found an alternative from our benefits advisors that could save you money. Mind if I walk you through it?</p>
   <div class="btns"><button class="btn primary" data-act="show">Show me</button><button class="btn" data-act="later">Not right now</button></div>`;
 
 const compareMsg = () => `
@@ -303,7 +334,7 @@ async function act(a, btn) {
     await gus(compareMsg(), now(), 900);
   } else if (a === "later") {
     push(S.dm, { from: "me", t: now(), html: `<p>Not right now</p>` });
-    await gus(`<p>No problem — I'll remind you before the confirmation deadline. Just message me any time.</p>`, now());
+    await gus(`<p>No problem — I'll remind you before the ${CONFIRM_BY} confirmation deadline. Just message me any time.</p>`, now());
   } else if (a === "bcbs" || a === "keep") {
     S.chosen = a;
     push(S.dm, { from: "me", t: now(), html: `<p>${a === "bcbs" ? "Switch to BCBS TX" : "Confirm my plans as-is"}</p>` });
@@ -357,12 +388,15 @@ function chip() {
 el("input").oninput = (e) => (el("send").disabled = !e.target.value.trim());
 el("form").onsubmit = (e) => { e.preventDefault(); const v = el("input").value.trim(); if (!v) return; el("input").value = ""; el("send").disabled = true; S.step = 2; userSays(v); };
 function wire() { inner.querySelectorAll("[data-act]").forEach((b) => (b.onclick = () => act(b.dataset.act, b))); }
-el("reset").onclick = () => { S = fresh(); boot(); };
+el("reset").onclick = () => { S = fresh(); inner.innerHTML = ""; boot(); };
 
-function boot() {
-  S.unread = 1;
-  S.dm.push({ from: "gus", t: "Today at 10:14 AM", html: openingMsg() });
-  renderAll();
+let bootId = 0;
+async function boot() {
+  const id = ++bootId;
+  S.unread = 0;
+  push(S.dm, { from: "me", t: "10:14 AM", html: `<p>Hey Gus, catch me up - anything I need to do related to benefits?</p>` });
+  await gus(openingMsg(), "10:14 AM", 1100);
+  if (id !== bootId) return;
 }
 boot();
 </script>
