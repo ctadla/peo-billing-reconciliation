@@ -134,10 +134,10 @@
     <div class="stream" id="stream"><div class="stream-inner" id="inner"></div></div>
     <div class="composer">
       <div class="chip" id="chip"></div>
-      <form class="box" id="form" autocomplete="off">
-        <input id="input" placeholder="Message Gus">
-        <button class="send" id="send" type="submit" disabled>Send</button>
-      </form>
+      <div class="box" id="form">
+        <input id="input" placeholder="Message Gus" autocomplete="off">
+        <button class="send" id="send" type="button">Send</button>
+      </div>
     </div>
   </section>
 </div>
@@ -174,7 +174,7 @@ const $ = (n) => "$" + n.toLocaleString();
 
 /* ---------- State ---------- */
 let S;
-function fresh() { return { view: "dm", dm: [], group: null, step: 0, chosen: null, udm: {}, nudged: {} }; }
+function fresh() { return { view: "dm", dm: [], group: null, step: 0, chosen: null, udm: {}, nudged: {}, chat: {} }; }
 S = fresh();
 
 const el = (id) => document.getElementById(id);
@@ -237,7 +237,7 @@ function channelMsgs(ch) {
 }
 function renderAll() {
   sidebar(); header();
-  const list = S.view.startsWith("ch:") ? channelMsgs(S.view.slice(3)) : S.view.startsWith("u:") ? S.udm[S.view.slice(2)].msgs : S.view === "dm" ? S.dm : S.group.msgs;
+  const list = S.view.startsWith("ch:") ? [...channelMsgs(S.view.slice(3)), ...(S.chat[S.view] || [])] : S.view.startsWith("u:") ? S.udm[S.view.slice(2)].msgs : S.view === "dm" ? S.dm : S.group.msgs;
   inner.innerHTML = list.map(msgHtml).join("");
   list.forEach((m, i) => { if (m.done) inner.querySelectorAll(`.msg[data-i="${i}"] button`).forEach((b) => (b.disabled = true)); });
   wire();
@@ -413,10 +413,24 @@ const SUGGEST = "hey - life has been busy. Can you tell me where I'm at with my 
 function chip() {
   el("chip").innerHTML = S.view === "dm" && S.step === 1 ? `<button type="button" id="sug">💬 Try: “${SUGGEST}”</button>` : "";
   const sug = document.getElementById("sug");
-  if (sug) sug.onclick = () => { el("input").value = SUGGEST; el("send").disabled = false; el("input").focus(); };
+  if (sug) sug.onclick = () => { el("input").value = SUGGEST; el("input").focus(); };
 }
-el("input").oninput = (e) => (el("send").disabled = !e.target.value.trim());
-el("form").onsubmit = (e) => { e.preventDefault(); const v = el("input").value.trim(); if (!v) return; el("input").value = ""; el("send").disabled = true; S.step = 2; userSays(v); };
+// Not a <form>: sandboxed preview frames can block form submission, so wire click + Enter directly.
+function send() {
+  const v = el("input").value.trim();
+  if (!v) return;
+  el("input").value = "";
+  S.step = 2;
+  if (S.view === "dm") return userSays(v);
+  // Other conversations: just post the message locally.
+  const mine = { from: "me", t: now(), html: `<p>${v.replace(/</g, "&lt;")}</p>` };
+  if (S.view === "group") S.group.msgs.push(mine);
+  else if (S.view.startsWith("u:")) S.udm[S.view.slice(2)].msgs.push(mine);
+  else (S.chat[S.view] = S.chat[S.view] || []).push(mine);
+  renderAll();
+}
+el("send").addEventListener("click", send);
+el("input").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); send(); } });
 function wire() { inner.querySelectorAll("[data-act]").forEach((b) => (b.onclick = () => act(b.dataset.act, b))); }
 el("reset").onclick = () => { S = fresh(); inner.innerHTML = ""; boot(); };
 
