@@ -144,8 +144,14 @@
 
 <script>
 /* ---------- Synthetic demo data (no real customer data) ---------- */
-const ADMIN = { first: "Jessica", full: "Jessica Jackson", initials: "JJ" };
-const COMPANY = "Lone Star Systems";
+// Persona defaults are synthetic. Override at view time with URL params, e.g.
+//   index.html?company=Acme%20Inc&admin=Pat&full=Pat%20Lee
+// so real customer names never need to be committed.
+const Q = new URLSearchParams(location.search);
+const adminFirst = Q.get("admin") || "Jessica";
+const adminFull = Q.get("full") || (Q.get("admin") ? adminFirst : "Jessica Jackson");
+const ADMIN = { first: adminFirst, full: adminFull, initials: adminFull.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase() };
+const COMPANY = Q.get("company") || "Lone Star Systems";
 const EMPLOYEES = 10;
 const CURRENT_MO = 4600;                       // current UHC monthly premium
 const RENEWAL_MO = Math.round(CURRENT_MO * 1.28);   // +28%
